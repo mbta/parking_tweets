@@ -8,7 +8,7 @@ defmodule ServerSentEvent.Producer do
   # Client functions
   def start_link(args) do
     url = Keyword.fetch!(args, :url)
-    opts = Keyword.take(args, ~w(debug name timeout spawn_opt))
+    opts = Keyword.take(args, ~w(debug name timeout spawn_opt)a)
     GenStage.start_link(__MODULE__, url, opts)
   end
 

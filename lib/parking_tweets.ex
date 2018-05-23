@@ -3,16 +3,12 @@ defmodule ParkingTweets do
   Documentation for ParkingTweets.
   """
 
-  @doc """
-  Hello world.
+  @doc "Generates the URL to fetch based on the parking lots we care about."
+  def url do
+    base_url = Application.fetch_env!(:parking_tweets, :url)
+    api_key = Application.fetch_env!(:parking_tweets, :api_key)
+    parking_lot_ids = Map.keys(Application.fetch_env!(:parking_tweets, :parking_lots))
 
-  ## Examples
-
-      iex> ParkingTweets.hello
-      :world
-
-  """
-  def hello do
-    :world
+    "#{base_url}?api_key=#{api_key}&filter[ids]=#{Enum.join(parking_lot_ids, ",")}"
   end
 end
