@@ -3,6 +3,7 @@ defmodule ParkingTweets.Tweet do
   Generates/sends tweets based on the parking statuses.
   """
   alias ParkingTweets.Garage
+  require Logger
 
   def from_garages(garages) do
     garage_statuses =
@@ -24,6 +25,9 @@ defmodule ParkingTweets.Tweet do
   def send_tweet(tweet) do
     status = IO.iodata_to_binary(tweet)
     ExTwitter.update(status).text
+  catch
+    ExTwtter.Error, e ->
+      Logger.error(fn -> inspect(e) end)
   end
 
   def last_tweet() do
