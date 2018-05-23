@@ -5,14 +5,14 @@ defmodule ParkingTweets.Tweeter do
   use GenStage
   alias ParkingTweets.{Garage, Tweet}
 
-  defstruct [garages: %{}, last_tweet: nil]
+  defstruct garages: %{}, last_tweet: nil
 
   def start_link(opts) do
     GenStage.start_link(__MODULE__, opts)
   end
 
   def init(opts) do
-    {:consumer, %__MODULE__{}, opts}
+    {:consumer, %__MODULE__{last_tweet: Tweet.last_tweet()}, opts}
   end
 
   def handle_events(events, _from, state) do
@@ -24,9 +24,11 @@ defmodule ParkingTweets.Tweeter do
     sorted_garages = garages |> Map.values() |> Enum.sort_by(&Garage.utilization_percent/1, &>=/2)
 
     tweet = Tweet.from_garages(sorted_garages)
-    if tweet != state.last_tweet do
+
+    unless Tweet.equal?(tweet, state.last_tweet) do
       Tweet.send_tweet(tweet)
     end
+
     state = %{state | garages: garages, last_tweet: tweet}
     {:noreply, [], state}
   end

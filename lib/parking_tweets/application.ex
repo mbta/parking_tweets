@@ -8,6 +8,7 @@ defmodule ParkingTweets.Application do
 
   def start(_type, _args) do
     override_environment!()
+    override_twitter_environment!()
     # List all child processes to be supervised
     children = [
       {ServerSentEvent.Producer, name: ServerSentEvent.Producer, url: {ParkingTweets, :url, []}},
@@ -20,7 +21,7 @@ defmodule ParkingTweets.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp override_environment! do
+  def override_environment! do
     for {key, envvar} <- [url: "URL", api_key: "API_KEY"] do
       case System.get_env(envvar) do
         binary when is_binary(binary) ->
@@ -31,6 +32,28 @@ defmodule ParkingTweets.Application do
       end
     end
 
+    :ok
+  end
+
+  def override_twitter_environment! do
+    configuration =
+      for {key, envvar} <- [
+            consumer_key: "CONSUMER_KEY",
+            consumer_secret: "CONSUMER_SECRET",
+            access_token: "ACCESS_TOKEN",
+            access_token_secret: "ACCESS_TOKEN_SECRET"
+          ] do
+        case System.get_env(envvar) do
+          binary when is_binary(binary) ->
+            {key, binary}
+
+          nil ->
+            Logger.error(fn -> "missing environment variable #{envvar}" end)
+            {key, nil}
+        end
+      end
+
+    ExTwitter.configure(configuration)
     :ok
   end
 end

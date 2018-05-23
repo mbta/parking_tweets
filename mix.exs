@@ -25,6 +25,8 @@ defmodule ParkingTweets.MixProject do
       {:gen_stage, "~> 0.13"},
       {:httpoison, "~> 1.1"},
       {:jason, "~> 1.0"},
+      {:extwitter, "~> 0.9"},
+      {:oauther, "~> 1.1"},
       {:bypass, "~> 0.8", only: :test, required: false}
     ]
   end
