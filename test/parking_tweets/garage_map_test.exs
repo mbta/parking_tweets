@@ -46,8 +46,8 @@ defmodule ParkingTweets.GarageMapTest do
         "id" => "park-alfcl-garage",
         "attributes" => %{
           "properties" => [
-            %{name: "utilization", value: 1, updated_at: "1970-01-01T00:00:00Z"},
-            %{name: "capacity", value: 2, updated_at: "1970-01-01T00:00:00Z"}
+            %{name: "utilization", value: 1},
+            %{name: "capacity", value: 2}
           ]
         }
       }
@@ -57,13 +57,14 @@ defmodule ParkingTweets.GarageMapTest do
       assert [_] = updates
     end
 
-    test "when receiving an update event, does not return it as an update if the utilization is the same", %{map: map} do
+    test "when receiving an update event, does not return it as an update if the utilization is the same",
+         %{map: map} do
       json_api = %{
         id: "park-alfcl-garage",
         attributes: %{
           properties: [
-            %{name: "utilization", value: 0, updated_at: "1970-01-01T00:00:00Z"},
-            %{name: "capacity", value: 2, updated_at: "1970-01-01T00:00:00Z"}
+            %{name: "utilization", value: 0},
+            %{name: "capacity", value: 2}
           ]
         }
       }
@@ -84,8 +85,8 @@ defmodule ParkingTweets.GarageMapTest do
               id: "park-alfcl-garage",
               attributes: %{
                 properties: [
-                  %{name: "utilization", value: 1, updated_at: "1970-01-01T00:00:00Z"},
-                  %{name: "capacity", value: 2, updated_at: "1970-01-01T00:00:00Z"}
+                  %{name: "utilization", value: 1},
+                  %{name: "capacity", value: 2}
                 ]
               }
             })
@@ -97,8 +98,8 @@ defmodule ParkingTweets.GarageMapTest do
               id: "park-brntn-garage",
               attributes: %{
                 properties: [
-                  %{name: "utilization", value: 1, updated_at: "1970-01-01T00:00:00Z"},
-                  %{name: "capacity", value: 2, updated_at: "1970-01-01T00:00:00Z"}
+                  %{name: "utilization", value: 1},
+                  %{name: "capacity", value: 2}
                 ]
               }
             })
@@ -110,8 +111,8 @@ defmodule ParkingTweets.GarageMapTest do
               id: "park-alfcl-garage",
               attributes: %{
                 properties: [
-                  %{name: "utilization", value: 1, updated_at: "1970-01-01T00:00:00Z"},
-                  %{name: "capacity", value: 2, updated_at: "1970-01-01T00:00:00Z"}
+                  %{name: "utilization", value: 1},
+                  %{name: "capacity", value: 2}
                 ]
               }
             })

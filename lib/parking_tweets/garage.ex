@@ -2,7 +2,7 @@ defmodule ParkingTweets.Garage do
   @moduledoc """
   Struct to represent information about a parking garage
   """
-  defstruct ~w(id name capacity utilization status updated_at)a
+  defstruct ~w(id name capacity utilization status)a
 
   def utilization_text(garage)
 
@@ -22,14 +22,12 @@ defmodule ParkingTweets.Garage do
   def from_json_api(map) do
     id = map["id"]
 
-    {properties, updated_at} =
+    properties =
       Enum.reduce(
         map["attributes"]["properties"],
-        {%{}, "9999-99-99T99:99:99Z"},
-        fn attribute, {properties, updated_at} ->
-          properties = Map.put(properties, attribute["name"], attribute["value"])
-          updated_at = min(updated_at, attribute["updated_at"])
-          {properties, updated_at}
+        %{},
+        fn attribute, properties ->
+          Map.put(properties, attribute["name"], attribute["value"])
         end
       )
 
@@ -38,8 +36,7 @@ defmodule ParkingTweets.Garage do
       name: name_from_id(id),
       capacity: Map.get(properties, "capacity", -1),
       utilization: Map.get(properties, "utilization", 0),
-      status: Map.get(properties, "status", nil),
-      updated_at: DateTime.from_iso8601(updated_at) |> elem(1)
+      status: Map.get(properties, "status", nil)
     }
   end
 
