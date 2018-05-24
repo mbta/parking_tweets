@@ -23,7 +23,7 @@ defmodule ParkingTweets.MixProject do
   defp deps do
     [
       {:gen_stage, "~> 0.13"},
-      {:httpoison, "~> 1.1"},
+      {:server_sent_event_stage, "~> 0.1"},
       {:jason, "~> 1.0"},
       {:extwitter, "~> 0.9"},
       {:oauther, "~> 1.1"},
