@@ -7,18 +7,24 @@ defmodule ParkingTweets.Application do
   require Logger
 
   def start(_type, _args) do
-    override_environment!()
-    override_twitter_environment!()
     # List all child processes to be supervised
-    children = [
-      {ServerSentEvent.Producer, name: ServerSentEvent.Producer, url: {ParkingTweets, :url, []}},
-      {ParkingTweets.Tweeter, subscribe_to: [ServerSentEvent.Producer]}
-    ]
-
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    children = children_to_start(Application.get_env(:parking_tweets, :start?))
     opts = [strategy: :one_for_all, name: ParkingTweets.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  def children_to_start(true) do
+    override_environment!()
+    override_twitter_environment!()
+
+    [
+      {ServerSentEventStage, name: :event_producer, url: {ParkingTweets, :url, []}},
+      {ParkingTweets.Tweeter, subscribe_to: [:event_producer]}
+    ]
+  end
+
+  def children_to_start(false) do
+    []
   end
 
   def override_environment! do

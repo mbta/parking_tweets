@@ -5,6 +5,7 @@ use Mix.Config
 config :parking_tweets,
   # url set by URL envvar
   # api_key set by API_KEY envvar
+  start?: true,
   parking_lots: %{
     "park-alfcl-garage" => "Alewife",
     "park-brntn-garage" => "Braintree",
@@ -15,4 +16,8 @@ config :parking_tweets,
     "park-wondl-garage" => "Wonderland"
   }
 
-config :logger, level: :warn
+config :logger, level: :info
+
+if Mix.env() == :test do
+  config :parking_tweets, start?: false
+end
