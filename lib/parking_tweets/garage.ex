@@ -36,9 +36,9 @@ defmodule ParkingTweets.Garage do
     %__MODULE__{
       id: id,
       name: name_from_id(id),
-      capacity: properties["capacity"],
-      utilization: properties["utilization"],
-      status: properties["status"],
+      capacity: Map.get(properties, "capacity", -1),
+      utilization: Map.get(properties, "utilization", 0),
+      status: Map.get(properties, "status", nil),
       updated_at: DateTime.from_iso8601(updated_at) |> elem(1)
     }
   end

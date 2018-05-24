@@ -16,8 +16,6 @@ config :parking_tweets,
     "park-wondl-garage" => "Wonderland"
   }
 
-config :logger, level: :info
-
 if Mix.env() == :test do
   config :parking_tweets, start?: false
 end
