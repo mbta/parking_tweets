@@ -2,6 +2,8 @@
 
 Tweets about parking garage availability.
 
+[![Build Status](https://semaphoreci.com/api/v1/mbta/parking_tweets/branches/master/shields_badge.svg)](https://semaphoreci.com/mbta/parking_tweets) [![codecov](https://codecov.io/gh/mbta/parking_tweets/branch/master/graph/badge.svg)](https://codecov.io/gh/mbta/parking_tweets)
+
 ## Configuration
 
 ParkingTweets requires 5 environment variables:
