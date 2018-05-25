@@ -7,7 +7,8 @@ defmodule ParkingTweets.MixProject do
       version: "0.1.0",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -27,7 +28,7 @@ defmodule ParkingTweets.MixProject do
       {:jason, "~> 1.0"},
       {:extwitter, "~> 0.9"},
       {:oauther, "~> 1.1"},
-      {:bypass, "~> 0.8", only: :test, required: false}
+      {:excoveralls, "~> 0.8"}
     ]
   end
 end
