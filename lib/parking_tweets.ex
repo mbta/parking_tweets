@@ -9,6 +9,6 @@ defmodule ParkingTweets do
     api_key = Application.fetch_env!(:parking_tweets, :api_key)
     parking_lot_ids = Map.keys(Application.fetch_env!(:parking_tweets, :parking_lots))
 
-    "#{base_url}?api_key=#{api_key}&filter[ids]=#{Enum.join(parking_lot_ids, ",")}"
+    "#{base_url}?api_key=#{api_key}&filter[id]=#{Enum.join(parking_lot_ids, ",")}"
   end
 end

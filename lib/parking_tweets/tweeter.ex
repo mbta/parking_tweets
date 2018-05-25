@@ -4,6 +4,7 @@ defmodule ParkingTweets.Tweeter do
   """
   use GenStage
   alias ParkingTweets.Tweet
+  require Logger
 
   def start_link(opts) do
     GenStage.start_link(__MODULE__, opts)
@@ -16,7 +17,11 @@ defmodule ParkingTweets.Tweeter do
   def handle_events(events, _from, state) do
     updates = List.last(events)
     tweet = Tweet.from_garages(updates)
-    IO.puts(tweet)
+
+    Logger.info(fn ->
+      "Sending Tweet: #{tweet}"
+    end)
+
     Tweet.send_tweet(tweet)
 
     {:noreply, [], state}

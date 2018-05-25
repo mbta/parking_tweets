@@ -4,14 +4,12 @@ defmodule ParkingTweets.Garage do
   """
   defstruct ~w(id name capacity utilization status)a
 
-  def utilization_text(garage)
-
-  def utilization_text(%__MODULE__{name: name, status: status}) when is_binary(status) do
-    [name, " is ", status]
+  def status?(%__MODULE__{status: status}) do
+    is_binary(status)
   end
 
-  def utilization_text(%__MODULE__{} = garage) do
-    [garage.name, " ", Integer.to_string(utilization_percent(garage)), "% full"]
+  def free_spaces(%__MODULE__{} = garage) do
+    garage.capacity - garage.utilization
   end
 
   def utilization_percent(%__MODULE__{} = garage) do
