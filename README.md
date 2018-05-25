@@ -1,21 +1,32 @@
 # ParkingTweets
 
-**TODO: Add description**
+Tweets about parking garage availability.
 
-## Installation
+## Configuration
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `parking_tweets` to your list of dependencies in `mix.exs`:
+ParkingTweets requires 5 environment variables:
 
-```elixir
-def deps do
-  [
-    {:parking_tweets, "~> 0.1.0"}
-  ]
-end
+- `API_KEY`: a [V3 API][https://api-v3.mbta.com/] key
+- `CONSUMER_KEY`
+- `CONSUMER_SECRET`
+- `ACCESS_TOKEN`
+- `ACCESS_TOKEN_SECRET` - configuration variables from [Twitter](https://developer.twitter.com/)
+
+## Running the applicaion
+
+You can run the application on your local machine:
+
+```
+mix run --no-halt
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/parking_tweets](https://hexdocs.pm/parking_tweets).
+Or with Docker:
 
+```bash
+docker build . -t parking_tweets
+docker run parking_tweets
+```
+
+## License
+
+ParkingTweets is licensed under the [MIT license](LICENSE).
