@@ -4,6 +4,7 @@ use Mix.Config
 
 config :parking_tweets,
   # url set by URL envvar
+  url: "https://api-v3.mbta.com/",
   # api_key set by API_KEY envvar
   start?: true,
   twitter_mod: ExTwitter,

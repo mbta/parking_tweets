@@ -29,7 +29,7 @@ defmodule ParkingTweets.Application do
 
   def override_environment! do
     for {key, envvar} <- [url: "URL", api_key: "API_KEY"] do
-      case System.get_env(envvar) do
+      case System.get_env(envvar) || Application.get_env(:parking_tweets, key) do
         binary when is_binary(binary) ->
           Application.put_env(:parking_tweets, key, binary)
 
@@ -60,6 +60,7 @@ defmodule ParkingTweets.Application do
       end
 
     ExTwitter.configure(configuration)
+    %ExTwitter.Model.User{} = ExTwitter.verify_credentials()
     :ok
   end
 end
