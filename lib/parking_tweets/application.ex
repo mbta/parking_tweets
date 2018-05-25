@@ -19,8 +19,7 @@ defmodule ParkingTweets.Application do
 
     [
       {ServerSentEventStage, name: :event_producer, url: {ParkingTweets, :url, []}},
-      {ParkingTweets.UpdatedGarages, name: :garages, subscribe_to: [:event_producer]},
-      {ParkingTweets.Tweeter, subscribe_to: [:garages]}
+      {ParkingTweets.UpdatedGarages, subscribe_to: [:event_producer]}
     ]
   end
 

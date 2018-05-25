@@ -6,6 +6,7 @@ config :parking_tweets,
   # url set by URL envvar
   # api_key set by API_KEY envvar
   start?: true,
+  twitter_mod: ExTwitter,
   parking_lots: %{
     "park-alfcl-garage" => "Alewife",
     "park-brntn-garage" => "Braintree",
@@ -17,5 +18,9 @@ config :parking_tweets,
   }
 
 if Mix.env() == :test do
-  config :parking_tweets, start?: false
+  config :logger, level: :warn
+
+  config :parking_tweets,
+    start?: false,
+    twitter_mod: ParkingTweets.TestTwitter
 end

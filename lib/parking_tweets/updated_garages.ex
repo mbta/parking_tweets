@@ -1,9 +1,10 @@
 defmodule ParkingTweets.UpdatedGarages do
   @moduledoc """
-  GenStage ProducerConsumer responsible for sending the garages that have been updated.
+  GenStage Consumer responsible for sending tweets about updated garages.
   """
   use GenStage
-  alias ParkingTweets.{Garage, GarageMap}
+  alias ParkingTweets.{Garage, GarageMap, Tweet}
+  require Logger
 
   defstruct garages: GarageMap.new(), queued: [], last_tweet_at: nil, frequency: 15 * 60
 
@@ -14,31 +15,54 @@ defmodule ParkingTweets.UpdatedGarages do
   end
 
   def init(opts) do
-    {:producer_consumer, %__MODULE__{last_tweet_at: now()}, opts}
+    {:consumer, %__MODULE__{last_tweet_at: now()}, opts}
   end
 
   def handle_events(events, _from, state) do
-    {garages, updates} = GarageMap.update_multiple(state.garages, events)
-    all_updates = Enum.uniq_by(updates ++ state.queued, & &1.id)
+    state =
+      state
+      |> update_garages(events)
+      |> maybe_send_tweet(now())
 
-    {state, events} =
-      if all_updates != [] and should_tweet?(state, updates) do
-        sorted_updates = Enum.sort_by(all_updates, &Garage.utilization_percent/1, &>=/2)
-        {%{state | last_tweet_at: now(), queued: []}, [sorted_updates]}
-      else
-        {%{state | queued: all_updates}, []}
-      end
-
-    state = %{state | garages: garages}
-    {:noreply, events, state}
+    {:noreply, [], state}
   end
 
-  def should_tweet?(state, updates) do
+  def update_garages(state, events) do
+    {garages, updates} = GarageMap.update_multiple(state.garages, events)
+    all_updates = Enum.uniq_by(updates ++ state.queued, & &1.id)
+    %{state | garages: garages, queued: all_updates}
+  end
+
+  def maybe_send_tweet(state, time) do
+    if should_tweet?(state, time) do
+      send_tweet(state, time)
+    else
+      state
+    end
+  end
+
+  def send_tweet(state, time) do
+    sorted_updates = Enum.sort_by(state.queued, &Garage.utilization_percent/1, &>=/2)
+    tweet = Tweet.from_garages(sorted_updates)
+
+    Logger.info(fn ->
+      "Sending Tweet: #{tweet}"
+    end)
+
+    Tweet.send_tweet(tweet)
+
+    %{state | last_tweet_at: time, queued: []}
+  end
+
+  def should_tweet?(state, time) do
     cond do
-      now() - state.last_tweet_at > state.frequency ->
+      state.queued == [] ->
+        false
+
+      time - state.last_tweet_at > state.frequency ->
         true
 
-      Enum.any?(updates, & &1.status) ->
+      Enum.any?(state.queued, &Garage.status?/1) ->
         true
 
       true ->

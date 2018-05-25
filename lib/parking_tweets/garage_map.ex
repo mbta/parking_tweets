@@ -45,7 +45,8 @@ defmodule ParkingTweets.GarageMap do
     old_garage = Map.get(map.garages, garage.id)
     new_map = put_in(map.garages[garage.id], garage)
 
-    if Garage.utilization_percent(old_garage) == Garage.utilization_percent(garage) do
+    if not is_nil(old_garage) and
+         Garage.utilization_percent(old_garage) == Garage.utilization_percent(garage) do
       {new_map, []}
     else
       {new_map, [garage]}
