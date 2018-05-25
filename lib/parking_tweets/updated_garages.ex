@@ -1,6 +1,6 @@
-defmodule ParkingTweets.TweetGenerator do
+defmodule ParkingTweets.UpdatedGarages do
   @moduledoc """
-  GenStage Consumer responsible for sending tweets based on parking updates.
+  GenStage ProducerConsumer responsible for sending the garages that have been updated.
   """
   use GenStage
   alias ParkingTweets.{Garage, GarageMap}
