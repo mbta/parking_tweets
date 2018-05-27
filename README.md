@@ -8,7 +8,7 @@ Tweets about parking garage availability.
 
 ParkingTweets requires 5 environment variables:
 
-- `API_KEY`: a [V3 API][https://api-v3.mbta.com/] key
+- `API_KEY`: a [V3 API](https://api-v3.mbta.com/) key
 - `CONSUMER_KEY`
 - `CONSUMER_SECRET`
 - `ACCESS_TOKEN`
