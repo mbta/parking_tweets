@@ -6,6 +6,8 @@ defmodule ParkingTweets.Application do
   use Application
   require Logger
 
+  @twitter Application.get_env(:parking_tweets, :twitter_mod)
+
   def start(_type, _args) do
     # List all child processes to be supervised
     children = children_to_start(Application.get_env(:parking_tweets, :start?))
@@ -59,8 +61,8 @@ defmodule ParkingTweets.Application do
         end
       end
 
-    ExTwitter.configure(configuration)
-    %ExTwitter.Model.User{} = ExTwitter.verify_credentials()
+    @twitter.configure(configuration)
+    %ExTwitter.Model.User{} = @twitter.verify_credentials()
     :ok
   end
 end
