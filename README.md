@@ -50,3 +50,7 @@ mix test
 ## License
 
 ParkingTweets is licensed under the [MIT license](LICENSE).
+
+## Code of Conduct
+
+Parking Tweets is governed by the [Contributor Covenant](CODE_OF_CONDUCT.md), version 1.4.
