@@ -24,7 +24,7 @@ defmodule ParkingTweets.Tweet do
           [long_status, "; " | Enum.intersperse(short_statuses, ", ")]
       end
 
-    ["#MBTA #Parking Update: ", garage_statuses, "."]
+    ["#Parking Update: ", garage_statuses, "."]
   end
 
   defp long_status(garage) do

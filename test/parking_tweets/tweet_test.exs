@@ -1,4 +1,5 @@
 defmodule ParkingTweets.TweetTest do
+  @moduledoc false
   use ExUnit.Case, async: true
   import ParkingTweets.Tweet
   alias ParkingTweets.Garage
@@ -40,7 +41,7 @@ defmodule ParkingTweets.TweetTest do
       tweet = IO.iodata_to_binary(from_garages(garages))
 
       assert tweet ==
-               "#MBTA #Parking Update: Garage has 1000 free spaces (0% full); Garage: 1000 (0%), Garage: 1000 (0%)."
+               "#Parking Update: Garage has 1000 free spaces (0% full); Garage: 1000 (0%), Garage: 1000 (0%)."
     end
   end
 
