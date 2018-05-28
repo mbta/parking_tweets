@@ -31,6 +31,7 @@ defmodule ParkingTweets.MixProject do
       {:server_sent_event_stage, "~> 0.1"},
       {:jason, "~> 1.0"},
       {:extwitter, "~> 0.9"},
+      {:credo, "~> 0.9", only: [:dev, :test]},
       {:excoveralls, "~> 0.8", only: [:dev, :test]},
       {:distillery, "~> 1.5", only: [:dev, :prod]}
     ]

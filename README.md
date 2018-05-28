@@ -29,6 +29,24 @@ docker build . -t parking_tweets
 docker run parking_tweets
 ```
 
+## Development Setup
+
+```
+# after installing asdf from https://github.com/asdf-vm/asdf..
+asdf install
+
+# get Elixir dependencies
+mix deps.get
+
+# add pre-commit hook to verify formatting & tests
+ln -s ../../hooks/pre-commit .git/hooks/pre-commit
+
+# make sure everything passes! (slowest to fastest)
+mix format --check-formatted
+mix credo
+mix test
+```
+
 ## License
 
 ParkingTweets is licensed under the [MIT license](LICENSE).
