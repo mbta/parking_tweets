@@ -9,7 +9,8 @@ defmodule ParkingTweets.UpdatedGarages do
   defstruct current: GarageMap.new(),
             previous: GarageMap.new(),
             last_tweet_at: nil,
-            frequency: 15 * 60
+            # 30 minutes
+            frequency: 30 * 60
 
   def start_link(opts) do
     start_link_opts = Keyword.take(opts, [:name])
