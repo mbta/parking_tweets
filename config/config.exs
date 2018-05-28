@@ -23,5 +23,7 @@ if Mix.env() == :test do
 
   config :parking_tweets,
     start?: false,
+    url: "https://test.example/path/",
+    api_key: "test_api_key",
     twitter_mod: ParkingTweets.TestTwitter
 end
