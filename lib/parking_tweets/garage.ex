@@ -4,6 +4,8 @@ defmodule ParkingTweets.Garage do
   """
   defstruct ~w(id name capacity utilization status)a
 
+  def id(%__MODULE__{id: id}), do: id
+
   def status?(%__MODULE__{status: status}) do
     is_binary(status)
   end

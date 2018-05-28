@@ -6,7 +6,10 @@ defmodule ParkingTweets.UpdatedGarages do
   alias ParkingTweets.{Garage, GarageMap, Tweet}
   require Logger
 
-  defstruct garages: GarageMap.new(), queued: [], last_tweet_at: nil, frequency: 15 * 60
+  defstruct current: GarageMap.new(),
+            previous: GarageMap.new(),
+            last_tweet_at: nil,
+            frequency: 15 * 60
 
   def start_link(opts) do
     start_link_opts = Keyword.take(opts, [:name])
@@ -28,9 +31,8 @@ defmodule ParkingTweets.UpdatedGarages do
   end
 
   def update_garages(state, events) do
-    {garages, updates} = GarageMap.update_multiple(state.garages, events)
-    all_updates = Enum.uniq_by(updates ++ state.queued, & &1.id)
-    %{state | garages: garages, queued: all_updates}
+    garages = GarageMap.update_multiple(state.current, events)
+    %{state | current: garages}
   end
 
   def maybe_send_tweet(state, time) do
@@ -42,8 +44,11 @@ defmodule ParkingTweets.UpdatedGarages do
   end
 
   def send_tweet(state, time) do
-    sorted_updates = Enum.sort_by(state.queued, &Garage.utilization_percent/1, &>=/2)
-    tweet = Tweet.from_garages(sorted_updates)
+    tweet =
+      state.current
+      |> GarageMap.difference(state.previous)
+      |> Enum.sort_by(&Garage.utilization_percent/1, &>=/2)
+      |> Tweet.from_garages()
 
     Logger.info(fn ->
       "Sending Tweet: #{tweet}"
@@ -51,22 +56,21 @@ defmodule ParkingTweets.UpdatedGarages do
 
     Tweet.send_tweet(tweet)
 
-    %{state | last_tweet_at: time, queued: []}
+    %{state | last_tweet_at: time, current: GarageMap.new(), previous: state.current}
   end
 
   def should_tweet?(state, time) do
+    differences = GarageMap.difference(state.current, state.previous)
+
     cond do
-      state.queued == [] ->
+      Enum.empty?(differences) ->
         false
 
       time - state.last_tweet_at > state.frequency ->
         true
 
-      Enum.any?(state.queued, &Garage.status?/1) ->
-        true
-
       true ->
-        false
+        Enum.any?(differences, &Garage.status?/1)
     end
   end
 
