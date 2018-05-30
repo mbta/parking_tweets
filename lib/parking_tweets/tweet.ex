@@ -7,56 +7,56 @@ defmodule ParkingTweets.Tweet do
 
   @twitter Application.get_env(:parking_tweets, :twitter_mod)
 
-  def from_garages([_ | _] = statuses) do
-    {garages_with_status, garages_without_status} = Enum.split_with(statuses, &Garage.status?/1)
-    all_statuses = Enum.flat_map([garages_with_status, garages_without_status], &status_texts/1)
+  defstruct statuses: [], long_status?: false
 
-    ["#Parking Update\n\n", Enum.intersperse(Enum.sort(all_statuses), "\n")]
+  def from_garages([_ | _] = garages) do
+    parsed = Enum.reduce(garages, %__MODULE__{}, &reduce_garage/2)
+
+    case parsed.statuses do
+      [{garage, status}] ->
+        if Garage.status?(garage) do
+          ["#Parking Availability: ", garage.name, " is ", status, "."]
+        else
+          ["#Parking Availability:: ", garage.name, " has ", status, "."]
+        end
+
+      multiple ->
+        texts =
+          for {garage, status} <- Enum.reverse(multiple) do
+            [garage.name, ": ", status]
+          end
+
+        ["#Parking Availability\n\n", Enum.intersperse(texts, "\n")]
+    end
   end
 
-  defp status_texts([garage | rest]) do
-    long_status = long_status(garage)
-
-    short_statuses =
-      for garage <- rest do
-        short_status(garage)
-      end
-
-    [long_status | short_statuses]
-  end
-
-  defp status_texts([]) do
-    []
+  defp reduce_garage(garage, state) do
+    cond do
+      Garage.status?(garage) ->
+        %{state | statuses: [{garage, garage.status} | state.statuses]}
+      state.long_status? ->
+        %{state | statuses: [{garage, short_status(garage)} | state.statuses]}
+      true ->
+        %{state | statuses: [{garage, long_status(garage)} | state.statuses], long_status?: true}
+    end
   end
 
   defp long_status(garage) do
-    if Garage.status?(garage) do
-      [garage.name, " is ", garage.status]
-    else
-      [
-        garage.name,
-        " has ",
-        Integer.to_string(Garage.free_spaces(garage)),
-        " free spaces (",
-        Integer.to_string(Garage.utilization_percent(garage)),
-        "% full)"
-      ]
-    end
+    [
+      Integer.to_string(Garage.free_spaces(garage)),
+      " free spaces (",
+      Integer.to_string(Garage.utilization_percent(garage)),
+      "% full)"
+    ]
   end
 
   defp short_status(garage) do
-    if Garage.status?(garage) do
-      [garage.name, ": ", garage.status]
-    else
-      [
-        garage.name,
-        ": ",
-        Integer.to_string(Garage.free_spaces(garage)),
-        " (",
-        Integer.to_string(Garage.utilization_percent(garage)),
-        "%)"
-      ]
-    end
+    [
+      Integer.to_string(Garage.free_spaces(garage)),
+      " (",
+      Integer.to_string(Garage.utilization_percent(garage)),
+      "%)"
+    ]
   end
 
   def send_tweet(tweet) do

@@ -47,7 +47,7 @@ defmodule ParkingTweets.UpdatedGarages do
     tweet =
       state.current
       |> GarageMap.difference(state.previous)
-      |> Enum.sort_by(&Garage.utilization_percent/1, &>=/2)
+      |> Enum.sort_by(& &1.name)
       |> Tweet.from_garages()
 
     Logger.info(fn ->
