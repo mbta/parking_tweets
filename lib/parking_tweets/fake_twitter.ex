@@ -1,6 +1,6 @@
-defmodule ParkingTweets.TestTwitter do
+defmodule ParkingTweets.FakeTwitter do
   @moduledoc """
-  Test module to pretend to send a tweet.
+  Module to pretend to send a tweet.
   """
 
   def configure(_) do

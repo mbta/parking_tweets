@@ -19,12 +19,19 @@ config :parking_tweets,
     "park-wondl-garage" => "Wonderland"
   }
 
-if Mix.env() == :test do
-  config :logger, level: :warn
+case Mix.env() do
+  :dev ->
+    config :parking_tweets, twitter_mod: ParkingTweets.FakeTwitter
 
-  config :parking_tweets,
-    start?: false,
-    url: "https://test.example/path/",
-    api_key: "test_api_key",
-    twitter_mod: ParkingTweets.TestTwitter
+  :test ->
+    config :logger, level: :warn
+
+    config :parking_tweets,
+      start?: false,
+      url: "https://test.example/path/",
+      api_key: "test_api_key",
+      twitter_mod: ParkingTweets.FakeTwitter
+
+  _ ->
+    :ok
 end
