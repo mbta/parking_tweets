@@ -11,16 +11,7 @@ defmodule ParkingTweets.Tweet do
     {garages_with_status, garages_without_status} = Enum.split_with(statuses, &Garage.status?/1)
     all_statuses = Enum.flat_map([garages_with_status, garages_without_status], &status_texts/1)
 
-    garage_statuses =
-      case all_statuses do
-        [long_status] ->
-          long_status
-
-        [long_status | short_statuses] ->
-          [long_status, "; " | Enum.intersperse(short_statuses, ", ")]
-      end
-
-    ["#Parking Update: ", garage_statuses, "."]
+    ["#Parking Update\n\n", Enum.intersperse(Enum.sort(all_statuses), "\n")]
   end
 
   defp status_texts([garage | rest]) do
