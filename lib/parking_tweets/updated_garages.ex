@@ -56,7 +56,7 @@ defmodule ParkingTweets.UpdatedGarages do
 
     Tweet.send_tweet(tweet)
 
-    %{state | last_tweet_at: time, current: GarageMap.new(), previous: state.current}
+    %{state | last_tweet_at: time, previous: state.current}
   end
 
   def should_tweet?(state, time) do

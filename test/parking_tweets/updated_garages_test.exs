@@ -77,10 +77,39 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       state = %{state | current: current}
       new_state = send_tweet(state, 100)
       assert new_state.previous == state.current
-      assert GarageMap.empty?(new_state.current)
       assert new_state.last_tweet_at == 100
       assert_receive {:tweet, text}
       assert text == IO.iodata_to_binary(Tweet.from_garages([high, low]))
+    end
+
+    test "after receiving an update, sends a tweet with the updated garage", %{state: state} do
+      json_api = [
+        %{"id" => "place-alfcl", "type" => "stop", "attributes" => %{"name" => "Alewife"}},
+        %{
+          "id" => "park-alfcl-garage",
+          "type" => "facility",
+          "relationships" => %{"stop" => %{"data" => %{"id" => "place-alfcl"}}},
+          "attributes" => %{"properties" => []}
+        },
+        %{"id" => "park-alfcl-garage", "attributes" => %{"properties" => []}}
+      ]
+
+      update = %{
+        "id" => "park-alfcl-garage",
+        "attributes" => %{
+          "properties" => [
+            %{"name" => "utilization", "value" => 1},
+            %{"name" => "capacity", "value" => 1}
+          ]
+        }
+      }
+
+      state = update_garages(state, [%Event{event: "reset", data: Jason.encode!(json_api)}])
+      state = send_tweet(state, 100)
+      assert_receive {:tweet, _}
+      state = update_garages(state, [%Event{event: "update", data: Jason.encode!(update)}])
+      _state = send_tweet(state, 200)
+      assert_receive {:tweet, _}
     end
   end
 

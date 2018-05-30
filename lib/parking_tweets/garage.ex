@@ -2,7 +2,7 @@ defmodule ParkingTweets.Garage do
   @moduledoc """
   Struct to represent information about a parking garage
   """
-  defstruct ~w(id name capacity utilization status)a
+  defstruct [:id, :name, :status, capacity: -1, utilization: 0]
 
   def id(%__MODULE__{id: id}), do: id
 
