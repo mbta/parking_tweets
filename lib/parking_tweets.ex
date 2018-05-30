@@ -5,8 +5,12 @@ defmodule ParkingTweets do
   def url do
     base_url = Application.fetch_env!(:parking_tweets, :url)
     api_key = Application.fetch_env!(:parking_tweets, :api_key)
-    parking_lot_ids = Map.keys(Application.fetch_env!(:parking_tweets, :parking_lots))
-    query = "?api_key=#{api_key}&filter[id]=#{Enum.join(parking_lot_ids, ",")}"
+    facility_ids = Application.fetch_env!(:parking_tweets, :facility_ids)
+
+    base_query =
+      "include=facility.stop&fields[live-facility]=properties&fields[facilty]=&fields[stop]=name"
+
+    query = "?#{base_query}&api_key=#{api_key}&filter[id]=#{Enum.join(facility_ids, ",")}"
 
     base_url
     |> URI.parse()

@@ -3,11 +3,26 @@ defmodule ParkingTweets.GarageMapTest do
   use ExUnit.Case, async: true
   import ParkingTweets.GarageMap
   alias ServerSentEventStage.Event
+  alias ParkingTweets.Garage
 
   setup do
     map = new()
 
     json_api = [
+      %{"id" => "place-alfcl", "type" => "stop", "attributes" => %{"name" => "Alewife"}},
+      %{"id" => "place-brntn", "type" => "stop", "attributes" => %{"name" => "Braintree"}},
+      %{
+        "id" => "park-alfcl-garage",
+        "type" => "facility",
+        "relationships" => %{"stop" => %{"data" => %{"id" => "place-alfcl"}}},
+        "attributes" => %{"properties" => []}
+      },
+      %{
+        "id" => "park-brntn-garage",
+        "type" => "facility",
+        "relationships" => %{"stop" => %{"data" => %{"id" => "place-brntn"}}},
+        "attributes" => %{"properties" => []}
+      },
       %{"id" => "park-alfcl-garage", "attributes" => %{"properties" => []}},
       %{"id" => "park-brntn-garage", "attributes" => %{"properties" => []}}
     ]
@@ -21,12 +36,20 @@ defmodule ParkingTweets.GarageMapTest do
       map: map
     } do
       json_api = [
+        %{"id" => "place-woodl", "type" => "stop", "attributes" => %{"name" => "Woodland"}},
+        %{
+          "id" => "park-woodl-garage",
+          "type" => "facility",
+          "relationships" => %{"stop" => %{"data" => %{"id" => "place-woodl"}}},
+          "attributes" => %{"properties" => []}
+        },
         %{"id" => "park-woodl-garage", "attributes" => %{"properties" => []}}
       ]
 
       new_map = update(map, %Event{event: "reset", data: Jason.encode!(json_api)})
       refute new_map == map
-      assert Enum.count(difference(new_map, map)) == 1
+      assert [garage] = Enum.to_list(difference(new_map, map))
+      assert %Garage{name: "Woodland"} = garage
     end
 
     test "when receiving an update event, returns the garage as an update", %{map: map} do
@@ -42,7 +65,8 @@ defmodule ParkingTweets.GarageMapTest do
 
       new_map = update(map, %Event{event: "update", data: Jason.encode!(json_api)})
       refute new_map == map
-      assert Enum.count(difference(new_map, map)) == 1
+      assert [garage] = Enum.to_list(difference(new_map, map))
+      assert %Garage{name: "Alewife", utilization: 1, capacity: 2} = garage
     end
 
     test "when receiving an update event, does not return it as an update if the data is the same",

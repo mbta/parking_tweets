@@ -33,14 +33,14 @@ defmodule ParkingTweets.Garage do
 
     %__MODULE__{
       id: id,
-      name: name_from_id(id),
       capacity: Map.get(properties, "capacity", -1),
       utilization: Map.get(properties, "utilization", 0),
       status: Map.get(properties, "status", nil)
     }
   end
 
-  for {id, name} <- Application.get_env(:parking_tweets, :parking_lots) do
-    def name_from_id(unquote(id)), do: unquote(name)
+  @doc "Updates the name of a garage"
+  def put_name(%__MODULE__{} = garage, name) do
+    %{garage | name: name}
   end
 end

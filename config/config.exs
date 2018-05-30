@@ -8,20 +8,24 @@ config :parking_tweets,
   # api_key set by API_KEY envvar
   start?: true,
   twitter_mod: ExTwitter,
-  parking_lots: %{
-    "park-alfcl-garage" => "Alewife",
-    "park-ER-0183-garage" => "Beverly",
-    "park-brntn-garage" => "Braintree",
-    "park-woodl-garage" => "Woodland",
-    "park-NEC-2173-garage" => "Route 128",
-    "park-ER-0168-garage" => "Salem",
-    "park-qamnl-garage" => "Quincy Adams",
-    "park-wondl-garage" => "Wonderland"
-  }
+  facility_ids: [
+    "park-alfcl-garage",
+    "park-ER-0183-garage",
+    "park-brntn-garage",
+    "park-woodl-garage",
+    "park-NEC-2173-garage",
+    "park-ER-0168-garage",
+    "park-qamnl-garage",
+    "park-wondl-garage"
+  ],
+  # 30 minutes
+  tweet_frequency: 30 * 60
 
 case Mix.env() do
   :dev ->
-    config :parking_tweets, twitter_mod: ParkingTweets.FakeTwitter
+    config :parking_tweets,
+      twitter_mod: ParkingTweets.FakeTwitter,
+      tweet_frequency: 5 * 60
 
   :test ->
     config :logger, level: :warn

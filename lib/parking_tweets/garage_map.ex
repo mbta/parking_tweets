@@ -4,7 +4,9 @@ defmodule ParkingTweets.GarageMap do
   """
   alias ParkingTweets.{Garage, IdMapSet}
 
-  defstruct garages: IdMapSet.new(&Garage.id/1)
+  defstruct garages: IdMapSet.new(&Garage.id/1),
+            facility_to_stop_id: %{},
+            stop_id_to_stop_name: %{}
 
   def new do
     %__MODULE__{}
@@ -19,16 +21,46 @@ defmodule ParkingTweets.GarageMap do
   end
 
   def update(%__MODULE__{}, %{event: "reset", data: data}) do
-    new_garages =
-      for update <- Jason.decode!(data), into: IdMapSet.new(&Garage.id/1) do
-        Garage.from_json_api(update)
-      end
-
-    %__MODULE__{garages: new_garages}
+    data
+    |> Jason.decode!()
+    |> Enum.reduce(%__MODULE__{}, &put_json(&2, &1))
   end
 
   def update(%__MODULE__{} = map, %{event: "update", data: data}) do
-    garage = data |> Jason.decode!() |> Garage.from_json_api()
+    data |> Jason.decode!() |> (&put_json(map, &1)).()
+  end
+
+  defp put_json(map, %{"type" => "facility"} = json) do
+    %{
+      "id" => facility_id,
+      "relationships" => %{
+        "stop" => %{
+          "data" => %{
+            "id" => stop_id
+          }
+        }
+      }
+    } = json
+
+    put_in(map.facility_to_stop_id[facility_id], stop_id)
+  end
+
+  defp put_json(map, %{"type" => "stop"} = json) do
+    %{
+      "id" => stop_id,
+      "attributes" => %{
+        "name" => stop_name
+      }
+    } = json
+
+    put_in(map.stop_id_to_stop_name[stop_id], stop_name)
+  end
+
+  defp put_json(map, json) do
+    garage = Garage.from_json_api(json)
+    stop_id = Map.get(map.facility_to_stop_id, garage.id)
+    stop_name = Map.get(map.stop_id_to_stop_name, stop_id)
+    garage = Garage.put_name(garage, stop_name)
     put(map, garage)
   end
 
