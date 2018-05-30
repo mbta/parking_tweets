@@ -10,6 +10,7 @@ config :parking_tweets,
   twitter_mod: ExTwitter,
   parking_lots: %{
     "park-alfcl-garage" => "Alewife",
+    "park-ER-0183-garage" => "Beverly",
     "park-brntn-garage" => "Braintree",
     "park-woodl-garage" => "Woodland",
     "park-NEC-2173-garage" => "Route 128",
