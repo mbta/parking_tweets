@@ -9,15 +9,24 @@ defmodule ParkingTweets.Tweet do
 
   defstruct statuses: [], long_status?: false
 
-  def from_garages([_ | _] = garages) do
+  def from_garages([_ | _] = garages, now) do
     parsed = Enum.reduce(garages, %__MODULE__{}, &reduce_garage/2)
+    formatted_time = format_time(now)
 
     case parsed.statuses do
       [{garage, status}] ->
         if Garage.status?(garage) do
-          ["#Parking Availability: ", garage.name, " is ", status, "."]
+          ["#Parking Availability: ", garage.name, " is ", status, " as of ", formatted_time, "."]
         else
-          ["#Parking Availability:: ", garage.name, " has ", status, "."]
+          [
+            "#Parking Availability: ",
+            garage.name,
+            " has ",
+            status,
+            " as of ",
+            formatted_time,
+            "."
+          ]
         end
 
       multiple ->
@@ -26,7 +35,7 @@ defmodule ParkingTweets.Tweet do
             [garage.name, ": ", status]
           end
 
-        ["#Parking Availability\n\n", Enum.intersperse(texts, "\n")]
+        ["#Parking Availability @ ", format_time(now), "\n\n", Enum.intersperse(texts, "\n")]
     end
   end
 
@@ -34,8 +43,10 @@ defmodule ParkingTweets.Tweet do
     cond do
       Garage.status?(garage) ->
         %{state | statuses: [{garage, garage.status} | state.statuses]}
+
       state.long_status? ->
         %{state | statuses: [{garage, short_status(garage)} | state.statuses]}
+
       true ->
         %{state | statuses: [{garage, long_status(garage)} | state.statuses], long_status?: true}
     end
@@ -56,6 +67,32 @@ defmodule ParkingTweets.Tweet do
       " (",
       Integer.to_string(Garage.utilization_percent(garage)),
       "%)"
+    ]
+  end
+
+  defp format_time(%{hour: hour, minute: minute}) do
+    {hour, am_pm} =
+      cond do
+        hour == 0 ->
+          {12, "AM"}
+
+        hour == 12 ->
+          {12, "PM"}
+
+        hour < 12 ->
+          {hour, "AM"}
+
+        true ->
+          {hour - 12, "PM"}
+      end
+
+    [
+      Integer.to_string(hour),
+      ":",
+      if(minute < 10, do: "0", else: ""),
+      Integer.to_string(minute),
+      " ",
+      am_pm
     ]
   end
 
