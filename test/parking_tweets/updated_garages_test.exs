@@ -63,12 +63,12 @@ defmodule ParkingTweets.UpdatedGaragesTest do
   end
 
   describe "send_tweet/2" do
-    test "sends the tweet with higher-utilization garages first", %{state: state} do
+    test "sends the tweet with alphabetized names", %{state: state} do
       current =
         Enum.reduce(
           [
-            low = %Garage{id: "low", name: "Low", utilization: 100, capacity: 200},
-            high = %Garage{id: "high", name: "High", utilization: 100, capacity: 100}
+            b = %Garage{id: "B", name: "B", utilization: 100, capacity: 100},
+            a = %Garage{id: "A", name: "A", utilization: 50, capacity: 100}
           ],
           state.current,
           fn garage, map -> GarageMap.put(map, garage) end
@@ -79,7 +79,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       assert new_state.previous == state.current
       assert new_state.last_tweet_at == 100
       assert_receive {:tweet, text}
-      assert text == IO.iodata_to_binary(Tweet.from_garages([high, low]))
+      assert text == IO.iodata_to_binary(Tweet.from_garages([a, b]))
     end
 
     test "after receiving an update, sends a tweet with the updated garage", %{state: state} do
