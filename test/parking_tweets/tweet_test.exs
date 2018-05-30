@@ -4,15 +4,17 @@ defmodule ParkingTweets.TweetTest do
   import ParkingTweets.Tweet
   alias ParkingTweets.Garage
 
+  @time ~N[1970-01-01T00:00:00]
+
   describe "from_garages/1" do
     test "uses status when available" do
-      assert_tweet_like([garage(status: "FULL")], ": Garage is FULL.")
+      assert_tweet_like([garage(status: "FULL")], ": Garage is FULL as of 12:00 AM.")
     end
 
     test "uses free spots and percentage" do
       assert_tweet_like(
         [garage(utilization: 901)],
-        ": Garage has 99 free spaces (90% full)."
+        ": Garage has 99 free spaces (90% full) as of 12:00 AM."
       )
     end
 
@@ -52,10 +54,26 @@ defmodule ParkingTweets.TweetTest do
         garage()
       ]
 
-      tweet = IO.iodata_to_binary(from_garages(garages))
+      tweet = IO.iodata_to_binary(from_garages(garages, @time))
 
       assert tweet ==
-               "#Parking Availability\n\nGarage: 1000 free spaces (0% full)\nGarage: 1000 (0%)\nGarage: 1000 (0%)"
+               "#Parking Availability @ 12:00 AM\n\nGarage: 1000 free spaces (0% full)\nGarage: 1000 (0%)\nGarage: 1000 (0%)"
+    end
+
+    test "formats the current time into the update" do
+      garages = [
+        garage(),
+        garage()
+      ]
+
+      for {hour, minute, expected} <- [
+            {11, 05, "11:05 AM"},
+            {12, 00, "12:00 PM"},
+            {13, 25, "1:25 PM"}
+          ] do
+        time = %{@time | hour: hour, minute: minute}
+        assert_tweet_like(time, garages, expected)
+      end
     end
   end
 
@@ -73,8 +91,8 @@ defmodule ParkingTweets.TweetTest do
     struct!(Garage, opts)
   end
 
-  def assert_tweet_like(garages, text) do
-    tweet = from_garages(garages)
+  def assert_tweet_like(time \\ @time, garages, text) do
+    tweet = from_garages(garages, time)
     assert IO.iodata_to_binary(tweet) =~ text
   end
 end

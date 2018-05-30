@@ -3,7 +3,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
   use ExUnit.Case, async: true
   import ParkingTweets.UpdatedGarages
   alias ServerSentEventStage.Event
-  alias ParkingTweets.{GarageMap, Garage, Tweet}
+  alias ParkingTweets.{GarageMap, Garage}
 
   setup do
     {:consumer, state, []} = init([])
@@ -67,8 +67,8 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       current =
         Enum.reduce(
           [
-            b = %Garage{id: "B", name: "B", utilization: 100, capacity: 100},
-            a = %Garage{id: "A", name: "A", utilization: 50, capacity: 100}
+            %Garage{id: "B", name: "B", utilization: 100, capacity: 100},
+            %Garage{id: "A", name: "A", utilization: 50, capacity: 100}
           ],
           state.current,
           fn garage, map -> GarageMap.put(map, garage) end
@@ -79,7 +79,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       assert new_state.previous == state.current
       assert new_state.last_tweet_at == 100
       assert_receive {:tweet, text}
-      assert text == IO.iodata_to_binary(Tweet.from_garages([a, b]))
+      assert text =~ "A: 50 free spaces"
     end
 
     test "after receiving an update, sends a tweet with the updated garage", %{state: state} do

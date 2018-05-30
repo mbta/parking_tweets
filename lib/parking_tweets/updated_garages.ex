@@ -44,11 +44,14 @@ defmodule ParkingTweets.UpdatedGarages do
   end
 
   def send_tweet(state, time) do
+    {:ok, local_time} =
+      FastLocalDatetime.unix_to_datetime(System.system_time(:seconds), "America/New_York")
+
     tweet =
       state.current
       |> GarageMap.difference(state.previous)
       |> Enum.sort_by(& &1.name)
-      |> Tweet.from_garages()
+      |> Tweet.from_garages(local_time)
 
     Logger.info(fn ->
       "Sending Tweet: #{tweet}"
