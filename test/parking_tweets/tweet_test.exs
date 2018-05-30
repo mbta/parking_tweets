@@ -22,6 +22,16 @@ defmodule ParkingTweets.TweetTest do
       assert_tweet_like(garages, "Other: VERY FULL")
     end
 
+    test "with a garage with status, the next garage also includes the help text" do
+      garages = [
+        garage(status: "FULL"),
+        garage(status: "FULL"),
+        garage()
+      ]
+
+      assert_tweet_like(garages, "Garage has 1000 free spaces (0% full)")
+    end
+
     test "with multiple garages, simplifies the free space text" do
       garages = [
         garage(),

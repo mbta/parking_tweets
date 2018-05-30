@@ -7,24 +7,35 @@ defmodule ParkingTweets.Tweet do
 
   @twitter Application.get_env(:parking_tweets, :twitter_mod)
 
-  def from_garages([first | rest]) do
-    long_status = long_status(first)
+  def from_garages([_ | _] = statuses) do
+    {garages_with_status, garages_without_status} = Enum.split_with(statuses, &Garage.status?/1)
+    all_statuses = Enum.flat_map([garages_with_status, garages_without_status], &status_texts/1)
+
+    garage_statuses =
+      case all_statuses do
+        [long_status] ->
+          long_status
+
+        [long_status | short_statuses] ->
+          [long_status, "; " | Enum.intersperse(short_statuses, ", ")]
+      end
+
+    ["#Parking Update: ", garage_statuses, "."]
+  end
+
+  defp status_texts([garage | rest]) do
+    long_status = long_status(garage)
 
     short_statuses =
       for garage <- rest do
         short_status(garage)
       end
 
-    garage_statuses =
-      case short_statuses do
-        [] ->
-          long_status
+    [long_status | short_statuses]
+  end
 
-        _ ->
-          [long_status, "; " | Enum.intersperse(short_statuses, ", ")]
-      end
-
-    ["#Parking Update: ", garage_statuses, "."]
+  defp status_texts([]) do
+    []
   end
 
   defp long_status(garage) do
