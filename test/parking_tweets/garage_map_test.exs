@@ -3,31 +3,12 @@ defmodule ParkingTweets.GarageMapTest do
   use ExUnit.Case, async: true
   import ParkingTweets.GarageMap
   alias ServerSentEventStage.Event
-  alias ParkingTweets.Garage
+  alias ParkingTweets.{Garage, SampleEvents}
 
   setup do
     map = new()
 
-    json_api = [
-      %{"id" => "place-alfcl", "type" => "stop", "attributes" => %{"name" => "Alewife"}},
-      %{"id" => "place-brntn", "type" => "stop", "attributes" => %{"name" => "Braintree"}},
-      %{
-        "id" => "park-alfcl-garage",
-        "type" => "facility",
-        "relationships" => %{"stop" => %{"data" => %{"id" => "place-alfcl"}}},
-        "attributes" => %{"properties" => []}
-      },
-      %{
-        "id" => "park-brntn-garage",
-        "type" => "facility",
-        "relationships" => %{"stop" => %{"data" => %{"id" => "place-brntn"}}},
-        "attributes" => %{"properties" => []}
-      },
-      %{"id" => "park-alfcl-garage", "attributes" => %{"properties" => []}},
-      %{"id" => "park-brntn-garage", "attributes" => %{"properties" => []}}
-    ]
-
-    new_map = update(map, %Event{event: "reset", data: Jason.encode!(json_api)})
+    new_map = update(map, SampleEvents.reset())
     {:ok, %{map: new_map}}
   end
 

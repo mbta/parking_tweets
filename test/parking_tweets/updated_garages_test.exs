@@ -3,7 +3,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
   use ExUnit.Case, async: true
   import ParkingTweets.UpdatedGarages
   alias ServerSentEventStage.Event
-  alias ParkingTweets.{GarageMap, Garage}
+  alias ParkingTweets.{GarageMap, Garage, SampleEvents}
 
   setup do
     {:consumer, state, []} = init([])
@@ -96,25 +96,6 @@ defmodule ParkingTweets.UpdatedGaragesTest do
     end
 
     test "after receiving an update, sends a tweet with all the garages", %{state: state} do
-      json_api = [
-        %{"id" => "place-alfcl", "type" => "stop", "attributes" => %{"name" => "Alewife"}},
-        %{"id" => "place-brntn", "type" => "stop", "attributes" => %{"name" => "Braintree"}},
-        %{
-          "id" => "park-alfcl-garage",
-          "type" => "facility",
-          "relationships" => %{"stop" => %{"data" => %{"id" => "place-alfcl"}}},
-          "attributes" => %{"properties" => []}
-        },
-        %{
-          "id" => "park-brntn-garage",
-          "type" => "facility",
-          "relationships" => %{"stop" => %{"data" => %{"id" => "place-brntn"}}},
-          "attributes" => %{"properties" => []}
-        },
-        %{"id" => "park-alfcl-garage", "attributes" => %{"properties" => []}},
-        %{"id" => "park-brntn-garage", "attributes" => %{"properties" => []}}
-      ]
-
       update = %{
         "id" => "park-alfcl-garage",
         "attributes" => %{
@@ -125,7 +106,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
         }
       }
 
-      state = update_garages(state, [%Event{event: "reset", data: Jason.encode!(json_api)}])
+      state = update_garages(state, [SampleEvents.reset()])
       state = send_tweet(state, 100)
       assert_receive {:tweet, _}
       state = update_garages(state, [%Event{event: "update", data: Jason.encode!(update)}])
