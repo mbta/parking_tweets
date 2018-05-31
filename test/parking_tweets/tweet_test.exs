@@ -8,13 +8,13 @@ defmodule ParkingTweets.TweetTest do
 
   describe "from_garages/1" do
     test "uses status when available" do
-      assert_tweet_like([garage(status: "FULL")], ": Garage is FULL as of 12:00 AM.")
+      assert_tweet_like([garage(status: "FULL")], "Garage: FULL")
     end
 
     test "uses free spots and percentage" do
       assert_tweet_like(
         [garage(utilization: 901)],
-        ": Garage has 99 free spaces (90% full) as of 12:00 AM."
+        "Garage: 99 free spaces (90% full)"
       )
     end
 
@@ -64,9 +64,7 @@ defmodule ParkingTweets.TweetTest do
       non_full = garage(name: "half", utilization: 50, capacity: 100)
       full = garage(name: "full", status: "FULL", alternates: [non_full])
 
-      assert_tweet_like([full], "full is FULL as of")
-      assert_tweet_like([full], "(try half)")
-      assert_tweet_like([full, non_full], "full: FULL (try half)")
+      assert_tweet_like([full], "full: FULL (try half)")
     end
 
     test "a full garage with a full alternate does not include that information" do

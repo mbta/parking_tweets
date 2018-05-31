@@ -11,41 +11,13 @@ defmodule ParkingTweets.Tweet do
 
   def from_garages([_ | _] = garages, now) do
     parsed = Enum.reduce(garages, %__MODULE__{}, &reduce_garage/2)
-    formatted_time = format_time(now)
 
-    case parsed.statuses do
-      [{garage, status}] ->
-        if Garage.status?(garage) do
-          [
-            "#Parking Availability: ",
-            garage.name,
-            " is ",
-            garage.status,
-            " as of ",
-            formatted_time,
-            maybe_alternate_text(garage.alternates),
-            "."
-          ]
-        else
-          [
-            "#Parking Availability: ",
-            garage.name,
-            " has ",
-            status,
-            " as of ",
-            formatted_time,
-            "."
-          ]
-        end
+    texts =
+      for {garage, status} <- Enum.reverse(parsed.statuses) do
+        [garage.name, ": ", status]
+      end
 
-      multiple ->
-        texts =
-          for {garage, status} <- Enum.reverse(multiple) do
-            [garage.name, ": ", status]
-          end
-
-        ["#Parking Availability @ ", format_time(now), "\n\n", Enum.intersperse(texts, "\n")]
-    end
+    ["#Parking Availability @ ", format_time(now), "\n\n", Enum.intersperse(texts, "\n")]
   end
 
   defp reduce_garage(garage, state) do
