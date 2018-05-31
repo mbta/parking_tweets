@@ -75,32 +75,6 @@ defmodule ParkingTweets.IdMapSet do
   end
 
   @doc """
-  Returns the items from `id_map_set_1` that are not in `id_map_set_2`.
-
-      iex> set_1 = new(&elem(&1, 0), [a: 1, b: 2, c: 3])
-      iex> set_2 = new(&elem(&1, 0), [a: 2, c: 3, d: 4])
-      iex> difference(set_1, set_2)
-      #ParkingTweets.IdMapSet<[a: 1, b: 2]>
-  """
-  def difference(%__MODULE__{} = id_map_set_1, %__MODULE__{} = id_map_set_2) do
-    new_set = new(id_map_set_1.id_fun)
-
-    :maps.fold(
-      fn id, item, set ->
-        case Map.get(id_map_set_2.map, id) do
-          ^item ->
-            set
-
-          _ ->
-            put(set, item)
-        end
-      end,
-      new_set,
-      id_map_set_1.map
-    )
-  end
-
-  @doc """
   Returns the items from `id_map_set_1` that are not in `id_map_set_2` with the same values.
 
       iex> set_1 = new(&elem(&1, 0), [a: 1, b: 2, c: 3])
