@@ -14,6 +14,17 @@ defmodule ParkingTweets.IdMapSet do
 
       iex> new(&elem(&1, 0), [a: 1, b: 2, a: 3])
       #ParkingTweets.IdMapSet<[a: 3, b: 2]>
+
+  IdMapSet also implements the Enumerable protocol:
+
+      iex> set = new(& &1, [1, 2, 3])
+      iex> Enum.count(set)
+      3
+      iex> 3 in set
+      true
+      iex> Enum.map(set, & &1 + 1)
+      [2, 3, 4]
+
   """
   def new(id_fun, enum \\ []) when is_function(id_fun, 1) do
     map =
@@ -129,7 +140,7 @@ defmodule ParkingTweets.IdMapSet do
 
   defimpl Enumerable do
     def count(id_map_set) do
-      {:ok, map_size(id_map_set.map)}
+      {:ok, @for.size(id_map_set)}
     end
 
     def member?(id_map_set, element) do
@@ -143,18 +154,6 @@ defmodule ParkingTweets.IdMapSet do
 
     def slice(_id_map_set) do
       {:error, __MODULE__}
-    end
-  end
-
-  defimpl Collectable do
-    def into(id_map_set) do
-      collector_fn = fn
-        set, {:cont, elem} -> @for.put(set, elem)
-        set, :done -> set
-        _set, :halt -> :ok
-      end
-
-      {id_map_set, collector_fn}
     end
   end
 end
