@@ -16,9 +16,16 @@ defmodule ParkingTweets.Tweet do
     case parsed.statuses do
       [{garage, status}] ->
         if Garage.status?(garage) do
-          ["#Parking Availability: ", garage.name, " is ", garage.status, " as of ", formatted_time,
-           maybe_alternate_text(garage.alternates),
-           "."]
+          [
+            "#Parking Availability: ",
+            garage.name,
+            " is ",
+            garage.status,
+            " as of ",
+            formatted_time,
+            maybe_alternate_text(garage.alternates),
+            "."
+          ]
         else
           [
             "#Parking Availability: ",
@@ -44,7 +51,12 @@ defmodule ParkingTweets.Tweet do
   defp reduce_garage(garage, state) do
     cond do
       Garage.status?(garage) ->
-        %{state | statuses: [{garage, [garage.status, maybe_alternate_text(garage.alternates)]} | state.statuses]}
+        %{
+          state
+          | statuses: [
+              {garage, [garage.status, maybe_alternate_text(garage.alternates)]} | state.statuses
+            ]
+        }
 
       state.long_status? ->
         %{state | statuses: [{garage, short_status(garage)} | state.statuses]}
@@ -56,6 +68,7 @@ defmodule ParkingTweets.Tweet do
 
   defp maybe_alternate_text(alternates) do
     non_full_alternates = Enum.reject(alternates, &Garage.status?/1)
+
     if non_full_alternates == [] do
       []
     else

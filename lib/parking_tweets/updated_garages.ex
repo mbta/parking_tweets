@@ -52,7 +52,7 @@ defmodule ParkingTweets.UpdatedGarages do
 
     tweet =
       state.current
-      |> GarageMap.difference(state.previous)
+      |> GarageMap.with_alternates()
       |> Enum.sort_by(& &1.name)
       |> Tweet.from_garages(local_time)
 

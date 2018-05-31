@@ -28,6 +28,7 @@ defmodule ParkingTweets.GarageMap do
 
   def update(%__MODULE__{} = map, %{event: "reset", data: data}) do
     reset_map = %__MODULE__{alternates: map.alternates}
+
     data
     |> Jason.decode!()
     |> Enum.reduce(reset_map, &put_json(&2, &1))
@@ -40,11 +41,13 @@ defmodule ParkingTweets.GarageMap do
   defp build_alternate_map(nil) do
     %{}
   end
+
   defp build_alternate_map(alternates) do
     # `alternates` is a list of lists of garage IDs. In a given list of IDs,
     # any of the garages can be substituted with each other.
     Enum.reduce(alternates, %{}, fn ids, acc ->
       set = MapSet.new(ids)
+
       Enum.reduce(ids, acc, fn id, acc ->
         without_current = MapSet.delete(set, id)
         Map.update(acc, id, without_current, &MapSet.union(&1, without_current))
@@ -92,24 +95,29 @@ defmodule ParkingTweets.GarageMap do
   end
 
   def difference(%__MODULE__{} = garage_map_1, %__MODULE__{} = garage_map_2) do
-    for garage <- IdMapSet.difference_by(
+    IdMapSet.difference_by(
       garage_map_1.garages,
       garage_map_2.garages,
       &Garage.utilization_percent/1
-        ) do
-        case calculate_alternates(garage_map_1, garage) do
-          [] ->
-            garage
-          alternates ->
-            Garage.put_alternates(garage, alternates)
-        end
+    )
+  end
+
+  def with_alternates(%__MODULE__{} = map) do
+    for garage <- map.garages do
+      case calculate_alternates(map, garage) do
+        [] ->
+          garage
+
+        alternates ->
+          Garage.put_alternates(garage, alternates)
+      end
     end
   end
 
   defp calculate_alternates(map, garage) do
     for alternate_id <- Map.get(map.alternates, garage.id, []),
-      %Garage{} = alternate_garage <- [IdMapSet.get(map.garages, alternate_id)] do
-        alternate_garage
+        %Garage{} = alternate_garage <- [IdMapSet.get(map.garages, alternate_id)] do
+      alternate_garage
     end
   end
 end

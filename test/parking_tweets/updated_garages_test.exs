@@ -95,16 +95,24 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       assert text =~ "A: 50 free spaces"
     end
 
-    test "after receiving an update, sends a tweet with the updated garage", %{state: state} do
+    test "after receiving an update, sends a tweet with all the garages", %{state: state} do
       json_api = [
         %{"id" => "place-alfcl", "type" => "stop", "attributes" => %{"name" => "Alewife"}},
+        %{"id" => "place-brntn", "type" => "stop", "attributes" => %{"name" => "Braintree"}},
         %{
           "id" => "park-alfcl-garage",
           "type" => "facility",
           "relationships" => %{"stop" => %{"data" => %{"id" => "place-alfcl"}}},
           "attributes" => %{"properties" => []}
         },
-        %{"id" => "park-alfcl-garage", "attributes" => %{"properties" => []}}
+        %{
+          "id" => "park-brntn-garage",
+          "type" => "facility",
+          "relationships" => %{"stop" => %{"data" => %{"id" => "place-brntn"}}},
+          "attributes" => %{"properties" => []}
+        },
+        %{"id" => "park-alfcl-garage", "attributes" => %{"properties" => []}},
+        %{"id" => "park-brntn-garage", "attributes" => %{"properties" => []}}
       ]
 
       update = %{
@@ -122,7 +130,9 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       assert_receive {:tweet, _}
       state = update_garages(state, [%Event{event: "update", data: Jason.encode!(update)}])
       _state = send_tweet(state, 200)
-      assert_receive {:tweet, _}
+      assert_receive {:tweet, text}
+      assert text =~ "Alewife"
+      assert text =~ "Braintree"
     end
   end
 

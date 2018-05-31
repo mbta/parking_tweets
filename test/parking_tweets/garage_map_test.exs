@@ -140,11 +140,12 @@ defmodule ParkingTweets.GarageMapTest do
     end
   end
 
-  describe "difference/2" do
+  describe "with_alternates/2" do
     setup do
       alternates = [
         ["a", "b"]
       ]
+
       map =
         [alternates: alternates]
         |> new()
@@ -154,15 +155,14 @@ defmodule ParkingTweets.GarageMapTest do
     end
 
     test "does nothing if there's no matching alternate", %{map: map} do
-      [garage] = Enum.to_list(difference(map, new()))
+      [garage] = Enum.to_list(with_alternates(map))
       assert garage.alternates == []
     end
 
     test "includes alternate garages if present", %{map: map} do
       alternate_garage = Garage.new(id: "b")
       map = put(map, alternate_garage)
-      map2 = put(new(), alternate_garage)
-      [garage] = Enum.to_list(difference(map, map2))
+      garage = Enum.find(with_alternates(map), &(&1.id == "a"))
       assert [_] = garage.alternates
     end
   end
