@@ -88,7 +88,7 @@ defmodule ParkingTweets.TweetTest do
         opts
       )
 
-    struct!(Garage, opts)
+    Garage.new(opts)
   end
 
   def assert_tweet_like(time \\ @time, garages, text) do

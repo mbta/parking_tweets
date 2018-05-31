@@ -18,6 +18,11 @@ defmodule ParkingTweets.Garage do
     div(garage.utilization * 100, garage.capacity)
   end
 
+  @doc "Create a new garage"
+  def new(opts) do
+    struct!(__MODULE__, opts)
+  end
+
   @doc "Convert a JSON-API map to a Garage"
   def from_json_api(map) do
     id = map["id"]
@@ -31,16 +36,16 @@ defmodule ParkingTweets.Garage do
         end
       )
 
-    %__MODULE__{
+    new(
       id: id,
       capacity: Map.get(properties, "capacity", -1),
       utilization: Map.get(properties, "utilization", 0),
       status: Map.get(properties, "status", nil)
-    }
+    )
   end
 
   @doc "Updates the name of a garage"
-  def put_name(%__MODULE__{} = garage, name) do
+  def put_name(%__MODULE__{} = garage, name) when is_binary(name) do
     %{garage | name: name}
   end
 end

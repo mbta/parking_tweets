@@ -26,6 +26,19 @@ defmodule ParkingTweets.UpdatedGaragesTest do
   describe "update_garages/2" do
     test "updates the current garage state", %{state: state} do
       events = [
+        # initial event to set up the name
+        %Event{
+          event: "reset",
+          data:
+            Jason.encode!([
+              %{"type" => "stop", "id" => "Alewife", "attributes" => %{"name" => "Alewife"}},
+              %{
+                "type" => "facility",
+                "id" => "park-alfcl-garage",
+                "relationships" => %{"stop" => %{"data" => %{"id" => "Alewife"}}}
+              }
+            ])
+        },
         %Event{
           event: "update",
           data:
