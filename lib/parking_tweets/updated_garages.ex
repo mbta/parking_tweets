@@ -6,8 +6,11 @@ defmodule ParkingTweets.UpdatedGarages do
   alias ParkingTweets.{Garage, GarageMap, Tweet}
   require Logger
 
-  defstruct current: GarageMap.new(),
-            previous: GarageMap.new(),
+  alternates = Application.get_env(:parking_tweets, :alternates)
+  initial_map = GarageMap.new(alternates: alternates)
+
+  defstruct current: initial_map,
+            previous: initial_map,
             last_tweet_at: nil,
             frequency: Application.get_env(:parking_tweets, :tweet_frequency)
 

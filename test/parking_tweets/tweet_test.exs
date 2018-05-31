@@ -60,6 +60,23 @@ defmodule ParkingTweets.TweetTest do
                "#Parking Availability @ 12:00 AM\n\nGarage: 1000 free spaces (0% full)\nGarage: 1000 (0%)\nGarage: 1000 (0%)"
     end
 
+    test "a full garage with a non-full alternate includes that information" do
+      non_full = garage(name: "half", utilization: 50, capacity: 100)
+      full = garage(name: "full", status: "FULL", alternates: [non_full])
+
+      assert_tweet_like([full], "full is FULL as of")
+      assert_tweet_like([full], "(try half)")
+      assert_tweet_like([full, non_full], "full: FULL (try half)")
+    end
+
+    test "a full garage with a full alternate does not include that information" do
+      full1 = garage(name: "one", status: "FULL")
+      full2 = garage(name: "two", status: "FULL", alternates: [full1])
+      garages = [full2]
+      tweet = IO.iodata_to_binary(from_garages(garages, @time))
+      refute tweet =~ "try"
+    end
+
     test "formats the current time into the update" do
       garages = [
         garage(),

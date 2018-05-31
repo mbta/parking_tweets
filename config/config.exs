@@ -18,6 +18,10 @@ config :parking_tweets,
     "park-qamnl-garage",
     "park-wondl-garage"
   ],
+  alternates: [
+    ["park-brntn-garage", "park-qamnl-garage"],
+    ["park-ER-0183-garage", "park-ER-0168-garage"]
+  ],
   # 30 minutes
   tweet_frequency: 30 * 60
 

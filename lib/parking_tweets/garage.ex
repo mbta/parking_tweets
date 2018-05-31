@@ -2,7 +2,7 @@ defmodule ParkingTweets.Garage do
   @moduledoc """
   Struct to represent information about a parking garage
   """
-  defstruct [:id, :name, :status, capacity: -1, utilization: 0]
+  defstruct [:id, :name, :status, capacity: -1, utilization: 0, alternates: []]
 
   def id(%__MODULE__{id: id}), do: id
 
@@ -47,5 +47,10 @@ defmodule ParkingTweets.Garage do
   @doc "Updates the name of a garage"
   def put_name(%__MODULE__{} = garage, name) when is_binary(name) do
     %{garage | name: name}
+  end
+
+  @doc "Updates the alternate garages"
+  def put_alternates(%__MODULE__{} = garage, [%__MODULE__{} | _] = alternates) do
+    %{garage | alternates: alternates}
   end
 end

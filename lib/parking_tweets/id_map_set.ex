@@ -75,6 +75,19 @@ defmodule ParkingTweets.IdMapSet do
   end
 
   @doc """
+  Get an item from the IdMapSet by its ID.
+
+      iex> set = new(&elem(&1, 0), [a: 1])
+      iex> get(set, :a)
+      {:a, 1}
+      iex> get(set, :b)
+      nil
+  """
+  def get(%__MODULE__{} = id_map_set, id) do
+    Map.get(id_map_set.map, id)
+  end
+
+  @doc """
   Returns the items from `id_map_set_1` that are not in `id_map_set_2` with the same values.
 
       iex> set_1 = new(&elem(&1, 0), [a: 1, b: 2, c: 3])
