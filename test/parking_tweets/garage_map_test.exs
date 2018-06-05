@@ -146,5 +146,19 @@ defmodule ParkingTweets.GarageMapTest do
       garage = Enum.find(with_alternates(map), &(&1.id == "a"))
       assert [_] = garage.alternates
     end
+
+    test "does not include full alternate garages", %{map: map} do
+      alternate_garage = Garage.new(id: "b", status: "FULL", utilization: 1, capacity: 1)
+      map = put(map, alternate_garage)
+      garage = Enum.find(with_alternates(map), &(&1.id == "a"))
+      assert garage.alternates == []
+    end
+
+    test "does not include alternate garages that are more than 90% full", %{map: map} do
+      alternate_garage = Garage.new(id: "b", utilization: 91, capacity: 100)
+      map = put(map, alternate_garage)
+      garage = Enum.find(with_alternates(map), &(&1.id == "a"))
+      assert garage.alternates == []
+    end
   end
 end

@@ -116,7 +116,8 @@ defmodule ParkingTweets.GarageMap do
 
   defp calculate_alternates(map, garage) do
     for alternate_id <- Map.get(map.alternates, garage.id, []),
-        %Garage{} = alternate_garage <- [IdMapSet.get(map.garages, alternate_id)] do
+        %Garage{} = alternate_garage <- [IdMapSet.get(map.garages, alternate_id)],
+        Garage.utilization_percent(alternate_garage) < 90 do
       alternate_garage
     end
   end
