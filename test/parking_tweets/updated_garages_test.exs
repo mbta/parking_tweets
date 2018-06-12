@@ -2,8 +2,8 @@ defmodule ParkingTweets.UpdatedGaragesTest do
   @moduledoc false
   use ExUnit.Case, async: true
   import ParkingTweets.UpdatedGarages
+  alias ParkingTweets.{Garage, GarageMap, SampleEvents}
   alias ServerSentEventStage.Event
-  alias ParkingTweets.{GarageMap, Garage, SampleEvents}
 
   setup do
     {:consumer, state, []} = init([])

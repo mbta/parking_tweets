@@ -2,8 +2,8 @@ defmodule ParkingTweets.GarageMapTest do
   @moduledoc false
   use ExUnit.Case, async: true
   import ParkingTweets.GarageMap
-  alias ServerSentEventStage.Event
   alias ParkingTweets.{Garage, SampleEvents}
+  alias ServerSentEventStage.Event
 
   setup do
     map = new()
