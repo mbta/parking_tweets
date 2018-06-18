@@ -21,7 +21,11 @@ defmodule ParkingTweets.SampleEvents do
               "relationships" => %{"stop" => %{"data" => %{"id" => stop_id}}},
               "attributes" => %{"properties" => []}
             },
-            %{"id" => garage_id, "attributes" => %{"properties" => []}}
+            %{
+              "id" => garage_id,
+              "type" => "live-facility",
+              "attributes" => %{"updated_at" => "1970-01-01T00:00:00Z", "properties" => []}
+            }
           ] do
         item
       end

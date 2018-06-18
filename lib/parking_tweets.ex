@@ -8,7 +8,7 @@ defmodule ParkingTweets do
     facility_ids = Application.fetch_env!(:parking_tweets, :facility_ids)
 
     base_query =
-      "include=facility.stop&fields[live-facility]=properties&fields[facilty]=&fields[stop]=name"
+      "include=facility.stop&fields[live-facility]=updated_at,properties&fields[facilty]=&fields[stop]=name"
 
     query = "?#{base_query}&api_key=#{api_key}&filter[id]=#{Enum.join(facility_ids, ",")}"
 

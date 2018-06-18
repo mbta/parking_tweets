@@ -2,7 +2,7 @@ defmodule ParkingTweets.Garage do
   @moduledoc """
   Struct to represent information about a parking garage
   """
-  defstruct [:id, :name, :status, capacity: -1, utilization: 0, alternates: []]
+  defstruct [:id, :name, :updated_at, :status, capacity: -1, utilization: 0, alternates: []]
 
   def id(%__MODULE__{id: id}), do: id
 
@@ -24,20 +24,22 @@ defmodule ParkingTweets.Garage do
   end
 
   @doc "Convert a JSON-API map to a Garage"
-  def from_json_api(map) do
-    id = map["id"]
+  def from_json_api(%{"id" => id, "attributes" => attributes}) do
+    {:ok, updated_at, _} = DateTime.from_iso8601(Map.fetch!(attributes, "updated_at"))
 
     properties =
-      Enum.reduce(
-        map["attributes"]["properties"],
+      attributes
+      |> Map.fetch!("properties")
+      |> Enum.reduce(
         %{},
-        fn attribute, properties ->
-          Map.put(properties, attribute["name"], attribute["value"])
+        fn %{"name" => name, "value" => value}, properties ->
+          Map.put(properties, name, value)
         end
       )
 
     new(
       id: id,
+      updated_at: updated_at,
       capacity: Map.get(properties, "capacity", -1),
       utilization: Map.get(properties, "utilization", 0),
       status: Map.get(properties, "status", nil)

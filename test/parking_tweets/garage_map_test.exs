@@ -24,7 +24,10 @@ defmodule ParkingTweets.GarageMapTest do
           "relationships" => %{"stop" => %{"data" => %{"id" => "place-woodl"}}},
           "attributes" => %{"properties" => []}
         },
-        %{"id" => "park-woodl-garage", "attributes" => %{"properties" => []}}
+        %{
+          "id" => "park-woodl-garage",
+          "attributes" => %{"updated_at" => "1970-01-01T00:00:00Z", "properties" => []}
+        }
       ]
 
       new_map = update(map, %Event{event: "reset", data: Jason.encode!(json_api)})
@@ -37,6 +40,7 @@ defmodule ParkingTweets.GarageMapTest do
       json_api = %{
         "id" => "park-alfcl-garage",
         "attributes" => %{
+          "updated_at" => "1970-01-01T00:00:00Z",
           "properties" => [
             %{name: "utilization", value: 1},
             %{name: "capacity", value: 2}
@@ -55,6 +59,7 @@ defmodule ParkingTweets.GarageMapTest do
       json_api = %{
         id: "park-alfcl-garage",
         attributes: %{
+          updated_at: "1970-01-01T00:00:00Z",
           properties: [
             %{name: "utilization", value: 0},
             %{name: "capacity", value: 2}
@@ -77,6 +82,7 @@ defmodule ParkingTweets.GarageMapTest do
             Jason.encode!(%{
               id: "park-alfcl-garage",
               attributes: %{
+                updated_at: "1970-01-01T00:00:00Z",
                 properties: [
                   %{name: "utilization", value: 1},
                   %{name: "capacity", value: 2}
@@ -90,6 +96,7 @@ defmodule ParkingTweets.GarageMapTest do
             Jason.encode!(%{
               id: "park-brntn-garage",
               attributes: %{
+                updated_at: "1970-01-01T00:00:00Z",
                 properties: [
                   %{name: "utilization", value: 1},
                   %{name: "capacity", value: 2}
@@ -103,6 +110,7 @@ defmodule ParkingTweets.GarageMapTest do
             Jason.encode!(%{
               id: "park-alfcl-garage",
               attributes: %{
+                updated_at: "1970-01-01T00:00:00Z",
                 properties: [
                   %{name: "utilization", value: 1},
                   %{name: "capacity", value: 2}

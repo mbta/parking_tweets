@@ -45,6 +45,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
             Jason.encode!(%{
               id: "park-alfcl-garage",
               attributes: %{
+                updated_at: "1970-01-01T00:00:00Z",
                 properties: [
                   %{name: "utilization", value: 1},
                   %{name: "capacity", value: 2}
@@ -99,6 +100,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       update = %{
         "id" => "park-alfcl-garage",
         "attributes" => %{
+          "updated_at" => "1970-01-01T00:00:00Z",
           "properties" => [
             %{"name" => "utilization", "value" => 1},
             %{"name" => "capacity", "value" => 1}
