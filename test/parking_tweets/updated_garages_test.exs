@@ -5,6 +5,8 @@ defmodule ParkingTweets.UpdatedGaragesTest do
   alias ParkingTweets.{Garage, GarageMap, SampleEvents}
   alias ServerSentEventStage.Event
 
+  @now_iso8601 DateTime.to_iso8601(DateTime.utc_now())
+
   setup do
     {:consumer, state, []} = init([])
     {:ok, %{state: state}}
@@ -45,7 +47,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
             Jason.encode!(%{
               id: "park-alfcl-garage",
               attributes: %{
-                updated_at: "1970-01-01T00:00:00Z",
+                updated_at: @now_iso8601,
                 properties: [
                   %{name: "utilization", value: 1},
                   %{name: "capacity", value: 2}
@@ -65,7 +67,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
     test "sends a tweet if should_tweet?/2 is true", %{state: state} do
       current =
         Enum.reduce(
-          [%Garage{name: "Garage", status: "FULL", utilization: 1, capacity: 1}],
+          [Garage.new(name: "Garage", status: "FULL", utilization: 1, capacity: 1)],
           state.current,
           &GarageMap.put(&2, &1)
         )
@@ -81,8 +83,8 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       current =
         Enum.reduce(
           [
-            %Garage{id: "B", name: "B", utilization: 100, capacity: 100},
-            %Garage{id: "A", name: "A", utilization: 50, capacity: 100}
+            Garage.new(id: "B", name: "B", utilization: 100, capacity: 100),
+            Garage.new(id: "A", name: "A", utilization: 50, capacity: 100)
           ],
           state.current,
           fn garage, map -> GarageMap.put(map, garage) end
@@ -100,7 +102,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       update = %{
         "id" => "park-alfcl-garage",
         "attributes" => %{
-          "updated_at" => "1970-01-01T00:00:00Z",
+          "updated_at" => @now_iso8601,
           "properties" => [
             %{"name" => "utilization", "value" => 1},
             %{"name" => "capacity", "value" => 1}
@@ -126,20 +128,20 @@ defmodule ParkingTweets.UpdatedGaragesTest do
     end
 
     test "does not send tweet if it's too soon", %{state: state} do
-      current = Enum.reduce([%Garage{}], state.current, &GarageMap.put(&2, &1))
+      current = Enum.reduce([Garage.new([])], state.current, &GarageMap.put(&2, &1))
       state = %{state | current: current}
       refute should_tweet?(state, state.last_tweet_at)
     end
 
     test "does send tweet if there are tweets to send", %{state: state} do
       future_time = state.last_tweet_at + state.frequency + 1
-      current = Enum.reduce([%Garage{}], state.current, &GarageMap.put(&2, &1))
+      current = Enum.reduce([Garage.new([])], state.current, &GarageMap.put(&2, &1))
       state = %{state | current: current}
       assert should_tweet?(state, future_time)
     end
 
     test "does send tweet if one of the queued garages has a status", %{state: state} do
-      current = Enum.reduce([%Garage{status: "FULL"}], state.current, &GarageMap.put(&2, &1))
+      current = Enum.reduce([Garage.new(status: "FULL")], state.current, &GarageMap.put(&2, &1))
       state = %{state | current: current}
       assert should_tweet?(state, state.last_tweet_at)
     end

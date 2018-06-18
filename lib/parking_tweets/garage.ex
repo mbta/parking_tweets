@@ -20,7 +20,8 @@ defmodule ParkingTweets.Garage do
 
   @doc "Create a new garage"
   def new(opts) do
-    struct!(__MODULE__, opts)
+    garage = struct!(__MODULE__, opts)
+    %{garage | updated_at: garage.updated_at || DateTime.utc_now()}
   end
 
   @doc "Convert a JSON-API map to a Garage"
@@ -44,6 +45,25 @@ defmodule ParkingTweets.Garage do
       utilization: Map.get(properties, "utilization", 0),
       status: Map.get(properties, "status", nil)
     )
+  end
+
+  @doc """
+  Has the garage not been updated recently?
+
+  Uses the :stale_garage_timeout configuration to determine how many seconds a garage is allowed to not be updated.
+
+      iex> zero = DateTime.from_naive!(~N[1970-01-01T00:00:00], "Etc/UTC")
+      iex> half_hour = DateTime.from_naive!(~N[1970-01-01T00:30:00], "Etc/UTC")
+      iex> two_hour = DateTime.from_naive!(~N[1970-01-01T02:00:00], "Etc/UTC")
+      iex> garage = new(updated_at: zero)
+      iex> stale?(garage, half_hour)
+      false
+      iex> stale?(garage, two_hour)
+      true
+  """
+  def stale?(%__MODULE__{updated_at: updated_at}, %DateTime{} = current_time) do
+    difference = DateTime.to_unix(current_time) - DateTime.to_unix(updated_at)
+    difference > Application.get_env(:parking_tweets, :stale_garage_timeout)
   end
 
   @doc "Updates the name of a garage"

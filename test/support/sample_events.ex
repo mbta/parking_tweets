@@ -8,6 +8,8 @@ defmodule ParkingTweets.SampleEvents do
   Build a `reset` event for the Alewife and Braintree garages.
   """
   def reset do
+    now_iso8601 = DateTime.to_iso8601(DateTime.utc_now())
+
     json_api =
       for {garage_id, stop_id, name} <- [
             {"park-alfcl-garage", "place-alfcl", "Alewife"},
@@ -24,7 +26,7 @@ defmodule ParkingTweets.SampleEvents do
             %{
               "id" => garage_id,
               "type" => "live-facility",
-              "attributes" => %{"updated_at" => "1970-01-01T00:00:00Z", "properties" => []}
+              "attributes" => %{"updated_at" => now_iso8601, "properties" => []}
             }
           ] do
         item

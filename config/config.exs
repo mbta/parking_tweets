@@ -23,7 +23,9 @@ config :parking_tweets,
     ["park-ER-0183-garage", "park-ER-0168-garage"]
   ],
   # 30 minutes
-  tweet_frequency: 30 * 60
+  tweet_frequency: 30 * 60,
+  # 1 hour
+  stale_garage_timeout: 60 * 60
 
 case Mix.env() do
   :dev ->
