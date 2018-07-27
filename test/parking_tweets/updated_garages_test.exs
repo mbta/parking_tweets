@@ -5,7 +5,8 @@ defmodule ParkingTweets.UpdatedGaragesTest do
   alias ParkingTweets.{Garage, GarageMap, SampleEvents}
   alias ServerSentEventStage.Event
 
-  @now_iso8601 DateTime.to_iso8601(DateTime.utc_now())
+  @now DateTime.utc_now()
+  @now_iso8601 DateTime.to_iso8601(@now)
 
   setup do
     {:consumer, state, []} = init([])
@@ -73,7 +74,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
         )
 
       state = %{state | current: current}
-      _ = maybe_send_tweet(state, 100)
+      _ = maybe_send_tweet(state, @now)
       assert_receive {:tweet, _}
     end
   end
@@ -91,9 +92,9 @@ defmodule ParkingTweets.UpdatedGaragesTest do
         )
 
       state = %{state | current: current}
-      new_state = send_tweet(state, 100)
+      new_state = send_tweet(state, @now)
       assert new_state.previous == state.current
-      assert new_state.last_tweet_at == 100
+      assert new_state.last_tweet_at == @now
       assert_receive {:tweet, text}
       assert text =~ "A: 50 free spaces"
     end
@@ -111,10 +112,10 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       }
 
       state = update_garages(state, [SampleEvents.reset()])
-      state = send_tweet(state, 100)
+      state = send_tweet(state, @now)
       assert_receive {:tweet, _}
       state = update_garages(state, [%Event{event: "update", data: Jason.encode!(update)}])
-      _state = send_tweet(state, 200)
+      _state = send_tweet(state, @now)
       assert_receive {:tweet, text}
       assert text =~ "Alewife"
       assert text =~ "Braintree"
@@ -123,7 +124,7 @@ defmodule ParkingTweets.UpdatedGaragesTest do
 
   describe "should_tweet?/2" do
     test "does not send tweet if there are no updates", %{state: state} do
-      future_time = state.last_tweet_at + state.frequency + 1
+      future_time = next_scheduled_time(state)
       refute should_tweet?(state, future_time)
     end
 
@@ -134,10 +135,12 @@ defmodule ParkingTweets.UpdatedGaragesTest do
     end
 
     test "does send tweet if there are tweets to send", %{state: state} do
-      future_time = state.last_tweet_at + state.frequency + 1
+      future_time = next_scheduled_time(state)
+      more_future_time = DateTime.from_unix!(DateTime.to_unix(future_time) + 1)
       current = Enum.reduce([Garage.new([])], state.current, &GarageMap.put(&2, &1))
       state = %{state | current: current}
       assert should_tweet?(state, future_time)
+      assert should_tweet?(state, more_future_time)
     end
 
     test "does send tweet if one of the queued garages has a status", %{state: state} do

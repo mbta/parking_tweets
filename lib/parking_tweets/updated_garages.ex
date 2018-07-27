@@ -4,6 +4,8 @@ defmodule ParkingTweets.UpdatedGarages do
   """
   use GenStage
   alias ParkingTweets.{Garage, GarageMap, Tweet}
+  alias Crontab.Scheduler, as: CrontabScheduler
+  alias Crontab.CronExpression.Parser, as: CrontabParser
   require Logger
 
   alternates = Application.get_env(:parking_tweets, :alternates)
@@ -12,7 +14,7 @@ defmodule ParkingTweets.UpdatedGarages do
   defstruct current: initial_map,
             previous: initial_map,
             last_tweet_at: nil,
-            frequency: Application.get_env(:parking_tweets, :tweet_frequency)
+            crontab: CrontabParser.parse!(Application.get_env(:parking_tweets, :tweet_cron))
 
   def start_link(opts) do
     start_link_opts = Keyword.take(opts, [:name])
@@ -38,7 +40,7 @@ defmodule ParkingTweets.UpdatedGarages do
     %{state | current: garages}
   end
 
-  def maybe_send_tweet(state, time) do
+  def maybe_send_tweet(state, %DateTime{} = time) do
     if should_tweet?(state, time) do
       send_tweet(state, time)
     else
@@ -46,16 +48,13 @@ defmodule ParkingTweets.UpdatedGarages do
     end
   end
 
-  def send_tweet(state, time) do
-    {:ok, local_time} =
-      FastLocalDatetime.unix_to_datetime(System.system_time(:seconds), "America/New_York")
-
+  def send_tweet(state, %DateTime{} = time) do
     tweet =
       state.current
       |> GarageMap.with_alternates()
-      |> Enum.reject(&Garage.stale?(&1, local_time))
+      |> Enum.reject(&Garage.stale?(&1, time))
       |> Enum.sort_by(& &1.name)
-      |> Tweet.from_garages(local_time)
+      |> Tweet.from_garages(time)
 
     Logger.info(fn ->
       "Sending Tweet: #{tweet}"
@@ -73,7 +72,7 @@ defmodule ParkingTweets.UpdatedGarages do
       Enum.empty?(differences) ->
         false
 
-      time - state.last_tweet_at > state.frequency ->
+      DateTime.compare(time, next_scheduled_time(state)) != :lt ->
         true
 
       true ->
@@ -82,6 +81,29 @@ defmodule ParkingTweets.UpdatedGarages do
   end
 
   defp now do
-    System.monotonic_time(:seconds)
+    {:ok, local_now} =
+      FastLocalDatetime.unix_to_datetime(System.system_time(:seconds), "America/New_York")
+
+    local_now
+  end
+
+  def next_scheduled_time(state) do
+    # CrontabScheduler only works with NaiveDateTime (since crontabs don't
+    # have timezone information). For simplicity, we keep the next scheduled
+    # time in the same time zone as the current time, even if that might
+    # technically be the wrong timezone.
+    {:ok, naive} =
+      CrontabScheduler.get_next_run_date(state.crontab, DateTime.to_naive(state.last_tweet_at))
+
+    %{
+      state.last_tweet_at
+      | year: naive.year,
+        month: naive.month,
+        day: naive.day,
+        hour: naive.hour,
+        minute: naive.minute,
+        second: naive.second,
+        microsecond: naive.microsecond
+    }
   end
 end

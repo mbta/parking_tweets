@@ -22,8 +22,8 @@ config :parking_tweets,
     ["park-brntn-garage", "park-qamnl-garage"],
     ["park-ER-0183-garage", "park-ER-0168-garage"]
   ],
-  # 30 minutes
-  tweet_frequency: 30 * 60,
+  # every 30 minutes, 5a to 2:30pm, M-F
+  tweet_cron: "*/30 5-14 * * 1-5",
   # 1 hour
   stale_garage_timeout: 60 * 60
 
@@ -31,7 +31,7 @@ case Mix.env() do
   :dev ->
     config :parking_tweets,
       twitter_mod: ParkingTweets.FakeTwitter,
-      tweet_frequency: 5 * 60
+      tweet_cron: "*/5 * * *"
 
   :test ->
     config :logger, level: :warn
