@@ -20,8 +20,26 @@ defmodule ParkingTweets.Garage do
 
   @doc "Create a new garage"
   def new(opts) do
-    garage = struct!(__MODULE__, opts)
-    %{garage | updated_at: garage.updated_at || DateTime.utc_now()}
+    __MODULE__
+    |> struct!(opts)
+    |> override_capacity()
+    |> (fn garage -> Map.put(garage, :updated_at, garage.updated_at || DateTime.utc_now()) end).()
+  end
+
+  for {garage_id, new_capacity} <- Application.get_env(:parking_tweets, :capacity_overrides) do
+    defp override_capacity(%{id: unquote(garage_id)} = garage) do
+      garage = %{garage | capacity: unquote(new_capacity)}
+
+      if garage.utilization >= garage.capacity do
+        %{garage | status: "FULL"}
+      else
+        garage
+      end
+    end
+  end
+
+  defp override_capacity(garage) do
+    garage
   end
 
   @doc "Convert a JSON-API map to a Garage"

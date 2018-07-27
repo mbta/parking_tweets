@@ -22,6 +22,7 @@ config :parking_tweets,
     ["park-brntn-garage", "park-qamnl-garage"],
     ["park-ER-0183-garage", "park-ER-0168-garage"]
   ],
+  capacity_overrides: %{},
   # every 30 minutes, 5a to 2:30pm, M-F
   tweet_cron: "*/30 5-14 * * 1-5",
   # 1 hour
@@ -40,7 +41,10 @@ case Mix.env() do
       start?: false,
       url: "https://test.example/path/",
       api_key: "test_api_key",
-      twitter_mod: ParkingTweets.FakeTwitter
+      twitter_mod: ParkingTweets.FakeTwitter,
+      capacity_overrides: %{
+        "fake-garage" => 5
+      }
 
   _ ->
     :ok
