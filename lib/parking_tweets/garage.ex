@@ -23,7 +23,7 @@ defmodule ParkingTweets.Garage do
     __MODULE__
     |> struct!(opts)
     |> override_capacity()
-    |> (fn garage -> Map.put(garage, :updated_at, garage.updated_at || DateTime.utc_now()) end).()
+    |> set_updated_at()
   end
 
   for {garage_id, new_capacity} <- Application.get_env(:parking_tweets, :capacity_overrides) do
@@ -40,6 +40,14 @@ defmodule ParkingTweets.Garage do
 
   defp override_capacity(garage) do
     garage
+  end
+
+  defp set_updated_at(%{updated_at: %DateTime{}} = garage) do
+    garage
+  end
+
+  defp set_updated_at(garage) do
+    %{garage | updated_at: DateTime.utc_now()}
   end
 
   @doc "Convert a JSON-API map to a Garage"
