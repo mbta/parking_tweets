@@ -22,7 +22,16 @@ config :parking_tweets,
     ["park-brntn-garage", "park-qamnl-garage"],
     ["park-ER-0183-garage", "park-ER-0168-garage"]
   ],
-  capacity_overrides: %{},
+  capacity_overrides: %{
+    "park-alfcl-garage" => 2429,
+    "park-ER-0183-garage" => 488,
+    # "park-brntn-garage" =>,
+    # "park-woodl-garage" => 533,
+    # "park-NEC-2173-garage" =>,
+    "park-ER-0168-garage" => 679
+    # "park-qamnl-garage" =>,
+    # "park-wondl-garage" => 1404
+  },
   # every 30 minutes, 5a to 2:30pm, M-F
   tweet_cron: "*/30 5-14 * * 1-5",
   # 1 hour
