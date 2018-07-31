@@ -98,7 +98,7 @@ defmodule ParkingTweets.GarageMap do
     IdMapSet.difference_by(
       garage_map_1.garages,
       garage_map_2.garages,
-      &Garage.utilization_percent/1
+      &Garage.utilization_percent_or_status/1
     )
   end
 

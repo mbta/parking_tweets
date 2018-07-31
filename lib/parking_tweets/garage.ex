@@ -18,6 +18,14 @@ defmodule ParkingTweets.Garage do
     div(garage.utilization * 100, garage.capacity)
   end
 
+  def utilization_percent_or_status(%__MODULE__{status: nil} = garage) do
+    utilization_percent(garage)
+  end
+
+  def utilization_percent_or_status(%__MODULE__{status: status}) do
+    status
+  end
+
   @doc "Create a new garage"
   def new(opts) do
     __MODULE__
