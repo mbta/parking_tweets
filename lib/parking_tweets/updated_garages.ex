@@ -62,7 +62,13 @@ defmodule ParkingTweets.UpdatedGarages do
 
     Tweet.send_tweet(tweet)
 
-    %{state | last_tweet_at: time, previous: state.current}
+    new_state = %{state | last_tweet_at: time, previous: state.current}
+
+    Logger.info(fn ->
+      "Next tweet scheduled: #{inspect(next_scheduled_time(new_state))}"
+    end)
+
+    new_state
   end
 
   def should_tweet?(state, time) do
