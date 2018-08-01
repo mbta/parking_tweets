@@ -23,8 +23,8 @@ config :parking_tweets,
     ["park-ER-0183-garage", "park-ER-0168-garage"]
   ],
   capacity_overrides: %{
-    "park-alfcl-garage" => 2429,
-    "park-ER-0183-garage" => 488,
+    "park-alfcl-garage" => 2383,
+    "park-ER-0183-garage" => 472,
     "park-brntn-garage" => 1193,
     # "park-woodl-garage" => 533,
     "park-NEC-2173-garage" => 2541,
