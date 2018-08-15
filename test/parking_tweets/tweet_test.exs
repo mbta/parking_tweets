@@ -4,7 +4,7 @@ defmodule ParkingTweets.TweetTest do
   import ParkingTweets.Tweet
   alias ParkingTweets.Garage
 
-  @time ~N[1970-01-01T00:00:00]
+  @time DateTime.from_unix!(86_400)
 
   describe "from_garages/1" do
     test "uses status when available" do
@@ -71,6 +71,17 @@ defmodule ParkingTweets.TweetTest do
       full1 = garage(name: "one", status: "FULL")
       full2 = garage(name: "two", status: "FULL", alternates: [full1])
       garages = [full2]
+      tweet = IO.iodata_to_binary(from_garages(garages, @time))
+      refute tweet =~ "try"
+    end
+
+    test "a full garage with a stale alernate does not include that information" do
+      stale =
+        garage(name: "stale", utilization: 50, capacity: 100, updated_at: DateTime.from_unix!(0))
+
+      full = garage(name: "full", status: "FULL", alternates: [stale])
+
+      garages = [full]
       tweet = IO.iodata_to_binary(from_garages(garages, @time))
       refute tweet =~ "try"
     end

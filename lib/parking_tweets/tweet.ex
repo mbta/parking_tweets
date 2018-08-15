@@ -7,10 +7,10 @@ defmodule ParkingTweets.Tweet do
 
   @twitter Application.get_env(:parking_tweets, :twitter_mod)
 
-  defstruct statuses: [], long_status?: false
+  defstruct statuses: [], long_status?: false, now: nil
 
   def from_garages([_ | _] = garages, now) do
-    parsed = Enum.reduce(garages, %__MODULE__{}, &reduce_garage/2)
+    parsed = Enum.reduce(garages, %__MODULE__{now: now}, &reduce_garage/2)
 
     texts =
       for {garage, status} <- Enum.reverse(parsed.statuses) do
@@ -26,7 +26,8 @@ defmodule ParkingTweets.Tweet do
         %{
           state
           | statuses: [
-              {garage, [garage.status, maybe_alternate_text(garage.alternates)]} | state.statuses
+              {garage, [garage.status, maybe_alternate_text(garage.alternates, state.now)]}
+              | state.statuses
             ]
         }
 
@@ -38,15 +39,15 @@ defmodule ParkingTweets.Tweet do
     end
   end
 
-  defp maybe_alternate_text(alternates) do
-    non_full_alternates = Enum.reject(alternates, &Garage.status?/1)
+  defp maybe_alternate_text(alternates, now) do
+    valid_alternates = Enum.reject(alternates, &(Garage.status?(&1) || Garage.stale?(&1, now)))
 
-    if non_full_alternates == [] do
+    if valid_alternates == [] do
       []
     else
       [
         " (try ",
-        Enum.intersperse(Enum.map(alternates, & &1.name), ", "),
+        Enum.intersperse(Enum.map(valid_alternates, & &1.name), ", "),
         ")"
       ]
     end
