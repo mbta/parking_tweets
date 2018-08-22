@@ -34,8 +34,13 @@ defmodule ParkingTweets.GarageMap do
     |> Enum.reduce(reset_map, &put_json(&2, &1))
   end
 
-  def update(%__MODULE__{} = map, %{event: "update", data: data}) do
+  def update(%__MODULE__{} = map, %{event: update, data: data})
+      when update in ["add", "update"] do
     data |> Jason.decode!() |> (&put_json(map, &1)).()
+  end
+
+  def update(%__MODULE__{} = map, %{event: "remove"}) do
+    map
   end
 
   defp build_alternate_map(nil) do

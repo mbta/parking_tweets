@@ -71,6 +71,17 @@ defmodule ParkingTweets.GarageMapTest do
       refute new_map == map
       assert Enum.empty?(difference(new_map, map))
     end
+
+    test "when receiving a remove event, does nothing",
+         %{map: map} do
+      json_api = %{
+        id: "park-alfcl-garage",
+        type: "live-facility"
+      }
+
+      new_map = update(map, %Event{event: "remove", data: Jason.encode!(json_api)})
+      assert new_map == map
+    end
   end
 
   describe "update_multiple/2" do
