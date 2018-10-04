@@ -30,7 +30,7 @@ defmodule ParkingTweets.Application do
   end
 
   def override_environment! do
-    for {key, envvar} <- [url: "URL", api_key: "API_KEY"] do
+    for {key, envvar} <- [url: "URL", api_key: "API_KEY", tweet_cron: "TWEET_CRON"] do
       case System.get_env(envvar) || Application.get_env(:parking_tweets, key) do
         binary when is_binary(binary) ->
           Application.put_env(:parking_tweets, key, binary)

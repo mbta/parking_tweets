@@ -13,8 +13,8 @@ defmodule ParkingTweets.UpdatedGarages do
 
   defstruct current: initial_map,
             previous: initial_map,
-            last_tweet_at: nil,
-            crontab: CrontabParser.parse!(Application.get_env(:parking_tweets, :tweet_cron))
+            last_tweet_at: :undefined,
+            crontab: :undefined
 
   def start_link(opts) do
     start_link_opts = Keyword.take(opts, [:name])
@@ -23,7 +23,12 @@ defmodule ParkingTweets.UpdatedGarages do
   end
 
   def init(opts) do
-    {:consumer, %__MODULE__{last_tweet_at: now()}, opts}
+    state = %__MODULE__{
+      last_tweet_at: now(),
+      crontab: CrontabParser.parse!(Application.get_env(:parking_tweets, :tweet_cron))
+    }
+
+    {:consumer, state, opts}
   end
 
   def handle_events(events, _from, state) do
