@@ -120,6 +120,27 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       assert text =~ "Alewife"
       assert text =~ "Braintree"
     end
+
+    test "does not send a tweet if all the garages are stale", %{state: state} do
+      current =
+        GarageMap.put(
+          state.current,
+          Garage.new(
+            id: "A",
+            name: "A",
+            utilization: 1,
+            capacity: 1,
+            updated_at: DateTime.from_unix!(0)
+          )
+        )
+
+      state = %{state | current: current}
+      new_state = send_tweet(state, @now)
+      refute_receive {:tweet, _}
+      assert new_state.previous == state.current
+      assert new_state.current == state.current
+      assert new_state.last_tweet_at == @now
+    end
   end
 
   describe "should_tweet?/2" do
@@ -132,6 +153,13 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       current = Enum.reduce([Garage.new([])], state.current, &GarageMap.put(&2, &1))
       state = %{state | current: current}
       refute should_tweet?(state, state.last_tweet_at)
+    end
+
+    test "does not send tweet if there are no current garages", %{state: state} do
+      previous = GarageMap.put(state.current, Garage.new([]))
+      state = %{state | current: GarageMap.new(), previous: previous}
+      future_time = next_scheduled_time(state)
+      refute should_tweet?(state, future_time)
     end
 
     test "does send tweet if there are tweets to send", %{state: state} do

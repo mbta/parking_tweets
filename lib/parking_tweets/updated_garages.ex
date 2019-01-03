@@ -54,18 +54,21 @@ defmodule ParkingTweets.UpdatedGarages do
   end
 
   def send_tweet(state, %DateTime{} = time) do
-    tweet =
+    garages =
       state.current
       |> GarageMap.with_alternates()
       |> Enum.reject(&Garage.stale?(&1, time))
       |> Enum.sort_by(& &1.name)
-      |> Tweet.from_garages(time)
 
-    Logger.info(fn ->
-      "Sending Tweet: #{tweet}"
-    end)
+    unless Enum.empty?(garages) do
+      tweet = Tweet.from_garages(garages, time)
 
-    Tweet.send_tweet(tweet)
+      Logger.info(fn ->
+        "Sending Tweet: #{tweet}"
+      end)
+
+      Tweet.send_tweet(tweet)
+    end
 
     new_state = %{state | last_tweet_at: time, previous: state.current}
 
