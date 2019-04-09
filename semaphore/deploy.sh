@@ -15,8 +15,8 @@ githash=$(git rev-parse --short HEAD)
 # get JSON describing task definition currently running on AWS
 # use it as basis for new revision, but replace image with the one built above
 taskdefinition=$(aws ecs describe-task-definition --region us-east-1 --task-definition $awsenv)
-taskdefinition=$(echo $taskdefinition | jq ".taskDefinition | del(.status) | del(.taskDefinitionArn) | del(.requiresAttributes) | del(.revision) | del(.compatibilities)")
-newcontainers=$(echo $taskdefinition | jq ".containerDefinitions | map(.image=\"$DOCKER_REPO:git-$githash\")")
+taskdefinition=$(echo "$taskdefinition" | jq ".taskDefinition | del(.status) | del(.taskDefinitionArn) | del(.requiresAttributes) | del(.revision) | del(.compatibilities)")
+newcontainers=$(echo "$taskdefinition" | jq ".containerDefinitions | map(.image=\"$DOCKER_REPO:git-$githash\")")
 aws ecs register-task-definition --region us-east-1 --family $awsenv --cli-input-json "$taskdefinition" --container-definitions "$newcontainers"
 newrevision=$(aws ecs describe-task-definition --region us-east-1 --task-definition $awsenv | jq '.taskDefinition.revision')
 
