@@ -1,4 +1,4 @@
-FROM elixir:1.6-alpine AS builder
+FROM elixir:1.8.1-alpine AS builder
 
 WORKDIR /root
 
@@ -17,9 +17,9 @@ WORKDIR /root
 
 RUN elixir --erl "-smp enable" /usr/local/bin/mix do deps.get --only prod, compile, release --verbose
 
-FROM alpine:latest
+FROM alpine:3.9
 
-RUN apk add --update libssl1.0 ncurses-libs bash \
+RUN apk add --update bash \
 	&& rm -rf /var/cache/apk
 
 # Set environment

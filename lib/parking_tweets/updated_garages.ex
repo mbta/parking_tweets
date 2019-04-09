@@ -3,9 +3,9 @@ defmodule ParkingTweets.UpdatedGarages do
   GenStage Consumer responsible for sending tweets about updated garages.
   """
   use GenStage
-  alias ParkingTweets.{Garage, GarageMap, Tweet}
-  alias Crontab.Scheduler, as: CrontabScheduler
   alias Crontab.CronExpression.Parser, as: CrontabParser
+  alias Crontab.Scheduler, as: CrontabScheduler
+  alias ParkingTweets.{Garage, GarageMap, Tweet}
   require Logger
 
   alternates = Application.get_env(:parking_tweets, :alternates)
@@ -96,7 +96,7 @@ defmodule ParkingTweets.UpdatedGarages do
 
   defp now do
     {:ok, local_now} =
-      FastLocalDatetime.unix_to_datetime(System.system_time(:seconds), "America/New_York")
+      FastLocalDatetime.unix_to_datetime(System.system_time(:second), "America/New_York")
 
     local_now
   end
