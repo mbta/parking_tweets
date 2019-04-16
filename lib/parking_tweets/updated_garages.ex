@@ -47,7 +47,7 @@ defmodule ParkingTweets.UpdatedGarages do
 
   def maybe_send_tweet(state, %DateTime{} = time) do
     if should_tweet?(state, time) do
-      send_tweet(state, time)
+      send_tweet(state, next_scheduled_time(state))
     else
       state
     end

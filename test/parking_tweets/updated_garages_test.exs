@@ -77,6 +77,22 @@ defmodule ParkingTweets.UpdatedGaragesTest do
       _ = maybe_send_tweet(state, @now)
       assert_receive {:tweet, _}
     end
+
+    test "uses the scheduled time for the tweet, rather than the current time", %{state: state} do
+      current =
+        Enum.reduce(
+          [Garage.new(name: "Garage", status: "FULL", utilization: 1, capacity: 1)],
+          state.current,
+          &GarageMap.put(&2, &1)
+        )
+
+      last_tweet_at = %{@now | hour: 13, minute: 2}
+      now = %{@now | hour: 13, minute: 31}
+      state = %{state | current: current, last_tweet_at: last_tweet_at}
+      _ = maybe_send_tweet(state, now)
+      assert_receive {:tweet, tweet}
+      assert tweet =~ "1:30 PM"
+    end
   end
 
   describe "send_tweet/2" do
