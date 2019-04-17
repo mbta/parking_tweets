@@ -47,13 +47,13 @@ defmodule ParkingTweets.UpdatedGarages do
 
   def maybe_send_tweet(state, %DateTime{} = time) do
     if should_tweet?(state, time) do
-      send_tweet(state, next_scheduled_time(state))
+      send_tweet(state, next_scheduled_time(state), time)
     else
       state
     end
   end
 
-  def send_tweet(state, %DateTime{} = time) do
+  def send_tweet(state, %DateTime{} = scheduled_time, %DateTime{} = time) do
     garages =
       state.current
       |> GarageMap.with_alternates()
@@ -61,7 +61,7 @@ defmodule ParkingTweets.UpdatedGarages do
       |> Enum.sort_by(& &1.name)
 
     unless Enum.empty?(garages) do
-      tweet = Tweet.from_garages(garages, time)
+      tweet = Tweet.from_garages(garages, scheduled_time)
 
       Logger.info(fn ->
         "Sending Tweet: #{tweet}"
