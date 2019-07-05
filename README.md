@@ -45,6 +45,9 @@ ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 mix format --check-formatted
 mix credo
 mix test
+
+# you can also run them in Docker
+docker build -f Dockerfile.test .
 ```
 
 ## License

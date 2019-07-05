@@ -1,12 +1,9 @@
 *~
 _build
 deps
-test
-rel
-!rel/config.exs
 erl_crash.dump
 .git
 .gitignore
 .env
 .dockerignore
-Dockerfile
+/Dockerfile*

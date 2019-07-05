@@ -10,7 +10,8 @@ defmodule ParkingTweets do
     base_query =
       "include=facility.stop&fields[live-facility]=updated_at,properties&fields[facilty]=&fields[stop]=name"
 
-    query = "?#{base_query}&api_key=#{api_key}&filter[id]=#{Enum.join(facility_ids, ",")}"
+    facility_ids_binary = Enum.join(facility_ids, ",")
+    query = "?#{base_query}&api_key=#{api_key}&filter[id]=#{facility_ids_binary}"
 
     base_url
     |> URI.parse()
