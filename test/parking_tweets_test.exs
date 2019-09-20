@@ -5,7 +5,7 @@ defmodule ParkingTweetsTest do
   describe "url/0" do
     test "returns a valid URL" do
       actual = url()
-      assert actual =~ "https://test.example/path/live-facilities/"
+      assert actual =~ "https://test.example/path/live_facilities/"
       assert actual =~ "api_key=test_api_key"
       assert actual =~ "filter[id]="
     end

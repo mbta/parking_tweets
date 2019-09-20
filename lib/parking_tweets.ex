@@ -15,7 +15,7 @@ defmodule ParkingTweets do
 
     base_url
     |> URI.parse()
-    |> URI.merge("live-facilities/")
+    |> URI.merge("live_facilities/")
     |> URI.merge(query)
     |> URI.to_string()
   end
