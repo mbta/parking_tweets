@@ -16,7 +16,8 @@ defmodule ParkingTweets.MixProject do
             parking_tweets: :permanent,
             runtime_tools: :permanent,
             oauther: :permanent,
-            extwitter: :permanent
+            extwitter: :permanent,
+            poison: :load
           ]
         ]
       ]
