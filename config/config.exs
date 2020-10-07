@@ -23,8 +23,8 @@ config :parking_tweets,
     ["park-ER-0183-garage", "park-ER-0168-garage"]
   ],
   capacity_overrides: %{},
-  # every 30 minutes, 5a to 2:30pm, M-F
-  tweet_cron: "*/30 5-14 * * 1-5",
+  # every 30 minutes
+  tweet_cron: "*/30 * * * *",
   # 1 hour
   stale_garage_timeout: 60 * 60
 
