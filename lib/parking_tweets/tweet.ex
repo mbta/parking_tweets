@@ -101,7 +101,7 @@ defmodule ParkingTweets.Tweet do
     status = IO.iodata_to_binary(tweet)
     @twitter.update(status)
   catch
-    ExTwtter.Error, e ->
+    ExTwitter.Error, e ->
       Logger.error(fn -> inspect(e) end)
   end
 end
