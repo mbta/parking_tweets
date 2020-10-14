@@ -38,11 +38,11 @@ defmodule ParkingTweets.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:gen_stage, "~> 0.13"},
-      {:server_sent_event_stage, "~> 0.1"},
+      {:gen_stage, "~> 1.0"},
+      {:server_sent_event_stage, "~> 1.0"},
       {:jason, "~> 1.0"},
       {:extwitter, "~> 0.9"},
-      {:fast_local_datetime, "~> 0.1"},
+      {:fast_local_datetime, "~> 1.0"},
       {:crontab, "~> 1.1"},
       {:credo, "~> 1.1", only: [:dev, :test]},
       {:excoveralls, "~> 0.8", only: [:dev, :test]}
