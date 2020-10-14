@@ -39,6 +39,7 @@ defmodule ParkingTweets.MixProject do
     [
       {:gen_stage, "~> 1.0"},
       {:server_sent_event_stage, "~> 1.0"},
+      {:castore, "~> 0.1"},
       {:jason, "~> 1.0"},
       {:extwitter, "~> 0.9"},
       {:fast_local_datetime, "~> 1.0"},
