@@ -16,8 +16,7 @@ defmodule ParkingTweets.MixProject do
             parking_tweets: :permanent,
             runtime_tools: :permanent,
             oauther: :permanent,
-            extwitter: :permanent,
-            poison: :load
+            extwitter: :permanent
           ]
         ]
       ]
@@ -27,7 +26,7 @@ defmodule ParkingTweets.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :crypto],
       mod: {ParkingTweets.Application, []}
     ]
   end
