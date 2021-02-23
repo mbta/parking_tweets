@@ -5,7 +5,7 @@ defmodule ParkingTweets.Tweet do
   alias ParkingTweets.Garage
   require Logger
 
-  @twitter Application.get_env(:parking_tweets, :twitter_mod)
+  @twitter Application.compile_env(:parking_tweets, :twitter_mod)
 
   defstruct statuses: [], long_status?: false, now: nil
 
