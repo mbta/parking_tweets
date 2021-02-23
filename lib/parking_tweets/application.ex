@@ -6,7 +6,7 @@ defmodule ParkingTweets.Application do
   use Application
   require Logger
 
-  @twitter Application.get_env(:parking_tweets, :twitter_mod)
+  @twitter Application.compile_env(:parking_tweets, :twitter_mod)
 
   def start(_type, _args) do
     # List all child processes to be supervised
