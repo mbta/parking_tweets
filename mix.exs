@@ -9,7 +9,7 @@ defmodule ParkingTweets.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      test_coverage: [tool: ExCoveralls],
+      test_coverage: [tool: LcovEx],
       releases: [
         parking_tweets: [
           applications: [
@@ -45,7 +45,7 @@ defmodule ParkingTweets.MixProject do
       {:fast_local_datetime, "~> 1.0"},
       {:crontab, "~> 1.1"},
       {:credo, "~> 1.1", only: [:dev, :test]},
-      {:excoveralls, "~> 0.8", only: [:dev, :test]}
+      {:lcov_ex, "~> 0.2", only: [:dev, :test]}
     ]
   end
 end
