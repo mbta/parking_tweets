@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.11.0-erlang-23.1.1-alpine-3.12.0 AS builder
+FROM hexpm/elixir:1.12.2-erlang-24.0.3-alpine-3.13.3 AS builder
 
 WORKDIR /root
 
@@ -22,7 +22,7 @@ ADD config /root/config
 
 RUN mix release
 
-FROM alpine:3.12.0
+FROM alpine:3.13.3
 
 RUN apk add --update bash dumb-init \
 	&& rm -rf /var/cache/apk
