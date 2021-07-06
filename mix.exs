@@ -39,9 +39,12 @@ defmodule ParkingTweets.MixProject do
     [
       {:gen_stage, "~> 1.0"},
       {:server_sent_event_stage, "~> 1.0"},
+      {:mint, "~> 1.3"},
       {:castore, "~> 0.1"},
       {:jason, "~> 1.0"},
       {:extwitter, "~> 0.9"},
+      {:oauther,
+       github: "Glimesh/oauther", ref: "2e3f681b32fbebe8b0e2c6464cf56cdafe8ae558", override: true},
       {:fast_local_datetime, "~> 1.0"},
       {:crontab, "~> 1.1"},
       {:credo, "~> 1.1", only: [:dev, :test]},
