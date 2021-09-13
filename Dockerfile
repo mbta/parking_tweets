@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.12.2-erlang-24.0.3-alpine-3.13.3 AS builder
+FROM hexpm/elixir:1.12.3-erlang-24.0.6-alpine-3.13.5 AS builder
 
 WORKDIR /root
 
@@ -22,9 +22,9 @@ ADD lib /root/lib
 
 RUN mix release
 
-FROM alpine:3.13.3
+FROM alpine:3.13.5
 
-RUN apk add --update bash dumb-init libstdc++ libgcc \
+RUN apk add --update bash dumb-init libstdc++ libgcc libssl1.1 \
 	&& rm -rf /var/cache/apk
 
 # Set environment
