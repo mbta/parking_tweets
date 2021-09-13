@@ -14,11 +14,11 @@ ENV MIX_ENV=prod
 WORKDIR /root
 
 ADD mix.* /root/
+ADD config /root/config
 
 RUN mix do deps.get --only prod, deps.compile
 
 ADD lib /root/lib
-ADD config /root/config
 
 RUN mix release
 
@@ -34,5 +34,7 @@ COPY --from=builder /root/_build/prod/rel/ /root/rel
 
 # ensure the application can run
 RUN /root/rel/parking_tweets/bin/parking_tweets eval ":crypto.supports()"
+
+HEALTHCHECK CMD ["/root/rel/parking_tweets/bin/parking_tweets", "rpc", "1 + 1"]
 
 CMD ["dumb-init", "/root/rel/parking_tweets/bin/parking_tweets", "start"]
