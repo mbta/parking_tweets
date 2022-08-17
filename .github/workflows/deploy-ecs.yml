@@ -23,7 +23,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ecs-cluster: parking-tweets
-          ecs-service: parking_tweets-prod
+          ecs-service: parking-tweets-prod
           docker-tag: ${{ steps.build-push.outputs.docker-tag }}
       - uses: mbta/actions/notify-slack-deploy@v1
         if: ${{ !cancelled() }}
