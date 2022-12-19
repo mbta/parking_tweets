@@ -34,7 +34,7 @@ defmodule ParkingTweets.Garage do
     |> set_updated_at()
   end
 
-  for {garage_id, new_capacity} <- Application.get_env(:parking_tweets, :capacity_overrides) do
+  for {garage_id, new_capacity} <- Application.compile_env(:parking_tweets, :capacity_overrides) do
     defp override_capacity(%{id: unquote(garage_id)} = garage) do
       garage = %{garage | capacity: unquote(new_capacity)}
 
